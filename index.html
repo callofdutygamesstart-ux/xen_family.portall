@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>XeN TESTING | XeN FAMILY Clan Application</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts & FontAwesome -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700;900&family=Orbitron:wght@600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Vazirmatn', 'sans-serif'],
+                        gaming: ['Orbitron', 'sans-serif'],
+                    },
+                    colors: {
+                        xen: {
+                            cyan: '#00f0ff',
+                            purple: '#7000ff',
+                            pink: '#ff007f',
+                            dark: '#0a0d14'
+                        }
+                    },
+                    animation: {
+                        'gradient-x': 'gradient-x 8s ease infinite',
+                        'pulse-glow': 'pulse-glow 2s infinite',
+                    },
+                    keyframes: {
+                        'gradient-x': {
+                            '0%, 100%': { 'background-size': '200% 200%', 'background-position': 'left center' },
+                            '50%': { 'background-size': '200% 200%', 'background-position': 'right center' },
+                        },
+                        'pulse-glow': {
+                            '0%, 100%': { opacity: '1', filter: 'drop-shadow(0 0 15px rgba(0, 240, 255, 0.6))' },
+                            '50%': { opacity: '0.8', filter: 'drop-shadow(0 0 25px rgba(255, 0, 127, 0.8))' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Strict Mobile Overflow Protection */
+        html, body {
+            max-width: 100vw;
+            overflow-x: hidden !important;
+            position: relative;
+            background-color: #06080d;
+            color: #ffffff;
+            touch-action: manipulation;
+        }
+
+        /* Glassmorphic Cards & Buttons */
+        .glass-panel {
+            background: rgba(15, 20, 32, 0.8);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6);
+        }
+
+        .glass-btn {
+            background: linear-gradient(135deg, rgba(0, 240, 255, 0.2) 0%, rgba(112, 0, 255, 0.3) 50%, rgba(255, 0, 127, 0.25) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 240, 255, 0.4);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-btn:hover {
+            border-color: rgba(255, 0, 127, 0.8);
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.5), inset 0 0 10px rgba(255, 0, 127, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .animated-gradient-text {
+            background: linear-gradient(-45deg, #00f0ff, #7000ff, #ff007f, #00f0ff);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradient-x 6s ease infinite;
+        }
+
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0a0d14;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #7000ff;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between items-center antialiased selection:bg-xen-pink selection:text-white px-3 py-4 sm:p-6">
+
+    <!-- Background Color Blur Effect -->
+    <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div class="absolute -top-24 -left-24 w-80 h-80 bg-xen-cyan/20 rounded-full blur-[100px] animate-pulse"></div>
+        <div class="absolute top-1/2 -right-24 w-80 h-80 bg-xen-purple/30 rounded-full blur-[120px] animate-pulse" style="animation-delay: 1s;"></div>
+        <div class="absolute -bottom-24 left-1/3 w-80 h-80 bg-xen-pink/20 rounded-full blur-[100px] animate-pulse" style="animation-delay: 2s;"></div>
+    </div>
+
+    <!-- Header Section -->
+    <header class="w-full max-w-lg z-10 text-center mb-4 relative">
+        <!-- Hidden Lock Button for Admin Panel Access -->
+        <button id="adminLockBtn" onclick="openAdminAuthModal()" class="absolute right-0 top-0 p-2 text-gray-400 hover:text-xen-cyan transition-colors duration-300 rounded-full hover:bg-white/5 active:scale-95" title="ورود به پنل">
+            <i class="fas fa-lock text-lg"></i>
+        </button>
+
+        <div class="inline-block px-3 py-1 rounded-full bg-xen-purple/20 border border-xen-purple/40 text-xen-cyan text-[11px] font-bold tracking-widest uppercase mb-2 animate-pulse-glow font-gaming">
+            Call of Duty Clan Application
+        </div>
+        
+        <h1 class="text-3xl sm:text-4xl font-black tracking-wider uppercase font-gaming animated-gradient-text drop-shadow-md">
+            XeN TESTING
+        </h1>
+        <p class="text-xs sm:text-sm text-gray-400 font-semibold tracking-wide mt-1">
+            پورتال رسمی تست ورودی کلن <span class="text-xen-cyan font-bold font-gaming">XeN FAMILY</span>
+        </p>
+    </header>
+
+    <!-- Main Container / Form Section -->
+    <main class="w-full max-w-lg z-10 my-auto">
+        <div class="glass-panel rounded-3xl p-5 sm:p-7 relative overflow-hidden">
+            
+            <div class="flex items-center justify-between pb-4 mb-5 border-b border-white/10">
+                <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-xen-cyan animate-ping"></span>
+                    <span class="text-xs font-bold text-gray-300 font-gaming tracking-wide">TEST FORM // ONLINE</span>
+                </div>
+                <div class="text-xs text-xen-pink font-gaming font-bold tracking-widest">
+                    SYSTEM V2.5
+                </div>
+            </div>
+
+            <!-- Form -->
+            <form id="clanApplyForm" onsubmit="handleFormSubmit(event)" class="space-y-4">
+                
+                <!-- Name -->
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 mb-1.5 pr-1">
+                        <i class="fas fa-user text-xen-cyan ml-1"></i> اسم کوچک
+                    </label>
+                    <input type="text" id="applicantName" required placeholder="مثال: عرفان" 
+                        class="w-full bg-black/40 border border-white/10 focus:border-xen-cyan rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-xen-cyan transition-all">
+                </div>
+
+                <!-- Age & Level -->
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-300 mb-1.5 pr-1">
+                            <i class="fas fa-hourglass-half text-xen-purple ml-1"></i> سن
+                        </label>
+                        <input type="number" id="applicantAge" min="10" max="80" required placeholder="مثال: 18" 
+                            class="w-full bg-black/40 border border-white/10 focus:border-xen-purple rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-xen-purple transition-all">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-300 mb-1.5 pr-1">
+                            <i class="fas fa-trophy text-yellow-400 ml-1"></i> لول بازی (حداکثر ۵۰۰)
+                        </label>
+                        <input type="number" id="applicantLevel" min="1" max="500" required placeholder="مثال: 350" 
+                            class="w-full bg-black/40 border border-white/10 focus:border-yellow-400 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-yellow-400 transition-all">
+                    </div>
+                </div>
+
+                <!-- Telegram ID -->
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 mb-1.5 pr-1">
+                        <i class="fab fa-telegram text-xen-cyan ml-1"></i> آیدی تلگرام
+                    </label>
+                    <div class="relative">
+                        <input type="text" id="applicantTelegram" required placeholder="@username" dir="ltr"
+                            class="w-full bg-black/40 border border-white/10 focus:border-xen-cyan rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-xen-cyan transition-all text-left">
+                    </div>
+                </div>
+
+                <!-- Device Selector -->
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 mb-1.5 pr-1">
+                        <i class="fas fa-gamepad text-xen-pink ml-1"></i> دیوایس بازی
+                    </label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button type="button" onclick="selectDevice('PC')" id="btn-device-PC"
+                            class="device-btn bg-black/40 border border-white/10 rounded-xl py-2.5 text-xs font-bold text-gray-300 hover:border-xen-cyan transition-all flex flex-col items-center justify-center gap-1">
+                            <i class="fas fa-desktop text-base"></i> PC
+                        </button>
+                        <button type="button" onclick="selectDevice('Android')" id="btn-device-Android"
+                            class="device-btn bg-black/40 border border-white/10 rounded-xl py-2.5 text-xs font-bold text-gray-300 hover:border-xen-cyan transition-all flex flex-col items-center justify-center gap-1">
+                            <i class="fab fa-android text-base"></i> اندروید
+                        </button>
+                        <button type="button" onclick="selectDevice('iOS')" id="btn-device-iOS"
+                            class="device-btn bg-black/40 border border-white/10 rounded-xl py-2.5 text-xs font-bold text-gray-300 hover:border-xen-cyan transition-all flex flex-col items-center justify-center gap-1">
+                            <i class="fab fa-apple text-base"></i> iOS
+                        </button>
+                    </div>
+                    <input type="hidden" id="applicantDevice" required>
+                </div>
+
+                <!-- Phone Model (Shows for Android & iOS) -->
+                <div id="phoneModelContainer" class="hidden transition-all duration-300">
+                    <label class="block text-xs font-bold text-xen-cyan mb-1.5 pr-1 animate-pulse">
+                        <i class="fas fa-mobile-alt ml-1"></i> مدل دقیق گوشی
+                    </label>
+                    <input type="text" id="applicantPhoneModel" placeholder="مثال: Poco F5 / iPhone 13 Pro" 
+                        class="w-full bg-xen-cyan/10 border border-xen-cyan/40 focus:border-xen-cyan rounded-xl px-4 py-3 text-sm text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-xen-cyan transition-all">
+                </div>
+
+                <!-- Submit Button -->
+                <div class="pt-2">
+                    <button type="submit" id="submitBtn" class="w-full glass-btn font-gaming font-bold text-white py-3.5 px-6 rounded-xl text-sm tracking-wider uppercase flex items-center justify-center gap-2 group">
+                        <span>ارسال اطلاعات درخواست</span>
+                        <i class="fas fa-paper-plane text-xen-cyan group-hover:translate-x-[-4px] transition-transform"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="w-full max-w-lg z-10 text-center mt-4 text-xs text-gray-500 font-gaming">
+        © XeN FAMILY CLAN | POWERED BY COD MOBILE COMMUNITY
+    </footer>
+
+    <!-- Toast Modal -->
+    <div id="toastModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm hidden px-4">
+        <div class="glass-panel p-6 rounded-2xl max-w-sm w-full text-center space-y-4 border-xen-cyan/30">
+            <div id="toastIcon" class="text-4xl text-xen-cyan mb-2"></div>
+            <h3 id="toastTitle" class="text-lg font-bold text-white"></h3>
+            <p id="toastMessage" class="text-xs text-gray-300 leading-relaxed"></p>
+            <button onclick="closeToast()" class="w-full glass-btn py-2.5 rounded-xl text-xs font-bold text-white mt-2"> متوجه شدم </button>
+        </div>
+    </div>
+
+    <!-- Admin Authentication Modal -->
+    <div id="adminAuthModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md hidden px-4">
+        <div class="glass-panel p-6 rounded-2xl max-w-xs w-full space-y-4 border-xen-purple/40">
+            <div class="text-center">
+                <i class="fas fa-user-shield text-3xl text-xen-cyan mb-2"></i>
+                <h3 class="text-base font-bold text-white font-gaming">احراز هویت مدیریت</h3>
+                <p class="text-xs text-gray-400 mt-1">رمز عبور اختصاصی مدیریت را وارد کنید</p>
+            </div>
+            <div>
+                <input type="password" id="adminPasswordInput" placeholder="••••••••••••" 
+                    class="w-full bg-black/50 border border-white/20 focus:border-xen-purple rounded-xl px-4 py-2.5 text-center text-sm text-white focus:outline-none tracking-widest">
+            </div>
+            <div class="flex gap-2">
+                <button onclick="verifyAdminPassword()" class="w-full glass-btn py-2.5 rounded-xl text-xs font-bold text-white"> ورود </button>
+                <button onclick="closeAdminAuthModal()" class="w-1/2 bg-white/10 hover:bg-white/20 rounded-xl text-xs text-gray-300 transition-colors"> انصراف </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard Modal -->
+    <div id="adminDashboardModal" class="fixed inset-0 z-50 bg-[#06080d]/95 backdrop-blur-xl hidden flex flex-col overflow-hidden">
+        <header class="p-4 bg-black/60 border-b border-white/10 flex items-center justify-between shrink-0">
+            <div class="flex items-center gap-2">
+                <i class="fas fa-shield-alt text-xen-cyan text-lg"></i>
+                <span class="font-gaming font-bold text-sm tracking-wide text-white">XeN ADMIN PANEL</span>
+            </div>
+            <button onclick="closeAdminDashboard()" class="text-gray-400 hover:text-white p-2">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </header>
+
+        <div class="flex border-b border-white/10 bg-black/30 shrink-0">
+            <button id="tabNewBtn" onclick="switchAdminTab('new')" class="flex-1 py-3 text-xs font-bold border-b-2 border-xen-cyan text-xen-cyan flex items-center justify-center gap-2 transition-all">
+                <i class="fas fa-inbox"></i>
+                <span>درخواست‌های جدید</span>
+                <span id="badgeNewCount" class="px-2 py-0.5 text-[10px] rounded-full bg-xen-cyan/20 text-xen-cyan">0</span>
+            </button>
+            <button id="tabReviewedBtn" onclick="switchAdminTab('reviewed')" class="flex-1 py-3 text-xs font-bold border-b-2 border-transparent text-gray-400 hover:text-gray-200 flex items-center justify-center gap-2 transition-all">
+                <i class="fas fa-check-circle"></i>
+                <span>بررسی‌شده‌ها</span>
+                <span id="badgeReviewedCount" class="px-2 py-0.5 text-[10px] rounded-full bg-white/10 text-gray-300">0</span>
+            </button>
+        </div>
+
+        <main class="flex-1 overflow-y-auto p-4 space-y-3" id="adminRequestsList">
+            <!-- Dynamic Content -->
+        </main>
+    </div>
+
+    <!-- Main Logic Script -->
+    <script>
+        // Supabase Database Setup
+        const SUPABASE_URL = "https://jrehjxsdmdfwkprdfyvt.supabase.co";
+        const SUPABASE_ANON_KEY = "sb_publishable_Sa8VoD30bdM6WMpPKHMkxg_VrTPHAee";
+        
+        let _supabase = null;
+        try {
+            _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        } catch (err) {
+            console.error("Supabase Initialization Failed", err);
+        }
+
+        let applicationsList = [];
+        let activeAdminTab = 'new';
+
+        // Select Device Type
+        function selectDevice(deviceType) {
+            document.getElementById('applicantDevice').value = deviceType;
+            
+            document.querySelectorAll('.device-btn').forEach(btn => {
+                btn.classList.remove('border-xen-cyan', 'bg-xen-cyan/20', 'text-xen-cyan');
+            });
+            
+            const activeBtn = document.getElementById(`btn-device-${deviceType}`);
+            if (activeBtn) {
+                activeBtn.classList.add('border-xen-cyan', 'bg-xen-cyan/20', 'text-xen-cyan');
+            }
+
+            const phoneContainer = document.getElementById('phoneModelContainer');
+            const phoneInput = document.getElementById('applicantPhoneModel');
+            
+            if (deviceType === 'Android' || deviceType === 'iOS') {
+                phoneContainer.classList.remove('hidden');
+                phoneInput.setAttribute('required', 'true');
+            } else {
+                phoneContainer.classList.add('hidden');
+                phoneInput.removeAttribute('required');
+                phoneInput.value = '';
+            }
+        }
+
+        // Form Submission to Supabase
+        async function handleFormSubmit(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('applicantName').value.trim();
+            const age = document.getElementById('applicantAge').value.trim();
+            const level = document.getElementById('applicantLevel').value.trim();
+            const telegram = document.getElementById('applicantTelegram').value.trim();
+            const device = document.getElementById('applicantDevice').value;
+            const phoneModel = document.getElementById('applicantPhoneModel').value.trim();
+
+            if (!device) {
+                showToast('خطا در تکمیل فرم', 'لطفاً نوع دیوایس خود را انتخاب کنید.', 'fa-exclamation-triangle');
+                return;
+            }
+
+            if (parseInt(level) > 500) {
+                showToast('خطا در مقدار لول', 'حداکثر لول مجاز ۵۰۰ می‌باشد.', 'fa-exclamation-triangle');
+                return;
+            }
+
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>در حال ثبت در دیتابیس...</span>';
+
+            const payload = {
+                name: name,
+                age: age,
+                level: level,
+                telegram: telegram.startsWith('@') ? telegram : '@' + telegram,
+                device: device,
+                model: (device === 'Android' || device === 'iOS') ? phoneModel : 'PC',
+                status: 'new'
+            };
+
+            try {
+                if (_supabase) {
+                    const { data, error } = await _supabase.from('recruits').insert([payload]);
+                    if (error) throw error;
+                } else {
+                    throw new Error("Supabase is not loaded");
+                }
+
+                showToast('ارسال موفقیت‌آمیز', 'اطلاعات شما با موفقیت در دیتابیس ذخیره شد.', 'fa-check-circle');
+                
+                document.getElementById('clanApplyForm').reset();
+                document.getElementById('applicantDevice').value = '';
+                document.querySelectorAll('.device-btn').forEach(btn => {
+                    btn.classList.remove('border-xen-cyan', 'bg-xen-cyan/20', 'text-xen-cyan');
+                });
+                document.getElementById('phoneModelContainer').classList.add('hidden');
+
+            } catch (error) {
+                console.error("Submission Error:", error);
+                showToast('خطا در ارسال', 'مشکلی در اتصال به دیتابیس رخ داد. مجدداً تلاش فرمایید.', 'fa-times-circle');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<span>ارسال اطلاعات درخواست</span><i class="fas fa-paper-plane text-xen-cyan"></i>';
+            }
+        }
+
+        // Admin Auth
+        function openAdminAuthModal() {
+            document.getElementById('adminAuthModal').classList.remove('hidden');
+            document.getElementById('adminPasswordInput').value = '';
+            document.getElementById('adminPasswordInput').focus();
+        }
+
+        function closeAdminAuthModal() {
+            document.getElementById('adminAuthModal').classList.add('hidden');
+        }
+
+        function verifyAdminPassword() {
+            const pass = document.getElementById('adminPasswordInput').value;
+            const securePass = "Hahbsisjjsjsjsbsb71626";
+            
+            if (pass === securePass) {
+                closeAdminAuthModal();
+                openAdminDashboard();
+            } else {
+                showToast('خطای دسترسی', 'رمز عبور پنل مدیریت اشتباه است.', 'fa-lock');
+            }
+        }
+
+        // Admin Dashboard Functions
+        async function openAdminDashboard() {
+            document.getElementById('adminDashboardModal').classList.remove('hidden');
+            await fetchApplicationsFromDatabase();
+        }
+
+        function closeAdminDashboard() {
+            document.getElementById('adminDashboardModal').classList.add('hidden');
+        }
+
+        async function fetchApplicationsFromDatabase() {
+            const container = document.getElementById('adminRequestsList');
+            container.innerHTML = '<div class="text-center py-12 text-xen-cyan"><i class="fas fa-spinner fa-spin text-2xl"></i><p class="text-xs mt-2">در حال بارگذاری اطلاعات...</p></div>';
+
+            try {
+                if (_supabase) {
+                    const { data, error } = await _supabase.from('recruits').select('*').order('id', { ascending: false });
+                    if (error) throw error;
+                    applicationsList = data || [];
+                }
+            } catch (err) {
+                console.error("Fetch error:", err);
+                showToast('خطا', 'مشکلی در دریافت داده‌ها از دیتابیس پیش آمد.', 'fa-exclamation-triangle');
+            }
+            renderAdminRequests();
+        }
+
+        function switchAdminTab(tabName) {
+            activeAdminTab = tabName;
+            const tabNewBtn = document.getElementById('tabNewBtn');
+            const tabReviewedBtn = document.getElementById('tabReviewedBtn');
+
+            if (tabName === 'new') {
+                tabNewBtn.className = "flex-1 py-3 text-xs font-bold border-b-2 border-xen-cyan text-xen-cyan flex items-center justify-center gap-2 transition-all";
+                tabReviewedBtn.className = "flex-1 py-3 text-xs font-bold border-b-2 border-transparent text-gray-400 hover:text-gray-200 flex items-center justify-center gap-2 transition-all";
+            } else {
+                tabReviewedBtn.className = "flex-1 py-3 text-xs font-bold border-b-2 border-xen-pink text-xen-pink flex items-center justify-center gap-2 transition-all";
+                tabNewBtn.className = "flex-1 py-3 text-xs font-bold border-b-2 border-transparent text-gray-400 hover:text-gray-200 flex items-center justify-center gap-2 transition-all";
+            }
+
+            renderAdminRequests();
+        }
+
+        function renderAdminRequests() {
+            const container = document.getElementById('adminRequestsList');
+            container.innerHTML = '';
+
+            const newItems = applicationsList.filter(item => item.status === 'new' || !item.status);
+            const reviewedItems = applicationsList.filter(item => item.status === 'reviewed');
+
+            document.getElementById('badgeNewCount').textContent = newItems.length;
+            document.getElementById('badgeReviewedCount').textContent = reviewedItems.length;
+
+            const displayList = activeAdminTab === 'new' ? newItems : reviewedItems;
+
+            if (displayList.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12 text-gray-500">
+                        <i class="fas fa-inbox text-4xl mb-3 opacity-40"></i>
+                        <p class="text-xs">هیچ درخواستی در این بخش وجود ندارد.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            displayList.forEach(item => {
+                const card = document.createElement('div');
+                card.className = "glass-panel p-4 rounded-2xl space-y-3 border-white/10 relative overflow-hidden";
+                
+                card.innerHTML = `
+                    <div class="flex items-center justify-between border-b border-white/10 pb-2">
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm font-bold text-white">${escapeHtml(item.name)}</span>
+                            <span class="px-2 py-0.5 rounded-md bg-xen-purple/30 border border-xen-purple/50 text-xen-cyan text-[10px] font-bold">
+                                لول ${escapeHtml(item.level)}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2 text-xs text-gray-300">
+                        <div><strong class="text-gray-400">سن:</strong> ${escapeHtml(item.age)} سال</div>
+                        <div><strong class="text-gray-400">تلگرام:</strong> <a href="https://t.me/${escapeHtml(item.telegram).replace('@','')}" target="_blank" class="text-xen-cyan underline">${escapeHtml(item.telegram)}</a></div>
+                        <div><strong class="text-gray-400">دیوایس:</strong> ${escapeHtml(item.device)}</div>
+                        ${item.device !== 'PC' ? `<div class="col-span-2"><strong class="text-gray-400">مدل گوشی:</strong> <span class="text-xen-pink">${escapeHtml(item.model)}</span></div>` : ''}
+                    </div>
+
+                    <div class="flex gap-2 pt-2 border-t border-white/10">
+                        ${(item.status === 'new' || !item.status) ? `
+                            <button onclick="markAsReviewed('${item.id}')" class="flex-1 bg-xen-cyan/20 hover:bg-xen-cyan/30 border border-xen-cyan/50 text-xen-cyan py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1">
+                                <i class="fas fa-check"></i> انتقال به بررسی‌شده‌ها
+                            </button>
+                        ` : ''}
+                        <button onclick="deleteRequest('${item.id}')" class="px-3 bg-red-500/20 hover:bg-red-500/30 border border-red-500/40 text-red-400 py-2 rounded-xl text-xs font-bold transition-all" title="حذف">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        async function markAsReviewed(id) {
+            try {
+                if (_supabase) {
+                    await _supabase.from('recruits').update({ status: 'reviewed' }).eq('id', id);
+                    await fetchApplicationsFromDatabase();
+                }
+            } catch (e) {
+                console.error("Update error:", e);
+            }
+        }
+
+        async function deleteRequest(id) {
+            if (confirm('آیا از حذف این درخواست اطمینان دارید؟')) {
+                try {
+                    if (_supabase) {
+                        await _supabase.from('recruits').delete().eq('id', id);
+                        await fetchApplicationsFromDatabase();
+                    }
+                } catch (e) {
+                    console.error("Delete error:", e);
+                }
+            }
+        }
+
+        function showToast(title, message, iconClass = 'fa-info-circle') {
+            document.getElementById('toastTitle').textContent = title;
+            document.getElementById('toastMessage').textContent = message;
+            document.getElementById('toastIcon').innerHTML = `<i class="fas ${iconClass}"></i>`;
+            document.getElementById('toastModal').classList.remove('hidden');
+        }
+
+        function closeToast() {
+            document.getElementById('toastModal').classList.add('hidden');
+        }
+
+        function escapeHtml(str) {
+            return String(str || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+        }
+    </script>
+</body>
+</html>
