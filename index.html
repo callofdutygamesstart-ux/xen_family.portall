@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>XeN TESTING | XeN FAMILY Clan Application</title>
+    <title>XeN TESTING | کلن گیمینگ XeN FAMILY</title>
     
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -31,12 +31,17 @@
                             cyan: '#00f0ff',
                             purple: '#7000ff',
                             pink: '#ff007f',
-                            dark: '#0a0d14'
+                            rubika: '#a824e4',
+                            telegram: '#0088cc',
+                            dark: '#06080d',
+                            card: 'rgba(12, 16, 28, 0.75)'
                         }
                     },
                     animation: {
-                        'gradient-x': 'gradient-x 8s ease infinite',
-                        'pulse-glow': 'pulse-glow 2s infinite',
+                        'gradient-x': 'gradient-x 6s ease infinite',
+                        'pulse-glow': 'pulse-glow 2.5s infinite',
+                        'float': 'float 4s ease-in-out infinite',
+                        'card-appear': 'cardAppear 0.5s ease-out forwards'
                     },
                     keyframes: {
                         'gradient-x': {
@@ -46,6 +51,14 @@
                         'pulse-glow': {
                             '0%, 100%': { opacity: '1', filter: 'drop-shadow(0 0 15px rgba(0, 240, 255, 0.6))' },
                             '50%': { opacity: '0.8', filter: 'drop-shadow(0 0 25px rgba(255, 0, 127, 0.8))' },
+                        },
+                        'float': {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-8px)' }
+                        },
+                        'cardAppear': {
+                            '0%': { opacity: '0', transform: 'scale(0.92) translateY(15px)' },
+                            '100%': { opacity: '1', transform: 'scale(1) translateY(0)' }
                         }
                     }
                 }
@@ -59,31 +72,36 @@
             max-width: 100vw;
             overflow-x: hidden !important;
             position: relative;
-            background-color: #06080d;
+            background-color: #05070c;
             color: #ffffff;
             touch-action: manipulation;
+            font-family: 'Vazirmatn', sans-serif;
         }
 
-        /* Glassmorphic Cards & Buttons */
+        /* Cyber Glassmorphic Panel */
         .glass-panel {
-            background: rgba(15, 20, 32, 0.8);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6);
+            background: rgba(12, 16, 28, 0.82);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.7), inset 0 0 1px rgba(255, 255, 255, 0.2);
         }
 
         .glass-btn {
-            background: linear-gradient(135deg, rgba(0, 240, 255, 0.2) 0%, rgba(112, 0, 255, 0.3) 50%, rgba(255, 0, 127, 0.25) 100%);
+            background: linear-gradient(135deg, rgba(0, 240, 255, 0.25) 0%, rgba(112, 0, 255, 0.35) 50%, rgba(255, 0, 127, 0.3) 100%);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(0, 240, 255, 0.4);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(0, 240, 255, 0.5);
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         .glass-btn:hover {
-            border-color: rgba(255, 0, 127, 0.8);
-            box-shadow: 0 0 20px rgba(0, 240, 255, 0.5), inset 0 0 10px rgba(255, 0, 127, 0.3);
-            transform: translateY(-2px);
+            border-color: rgba(255, 0, 127, 0.9);
+            box-shadow: 0 0 25px rgba(0, 240, 255, 0.6), inset 0 0 15px rgba(255, 0, 127, 0.4);
+            transform: translateY(-3px) scale(1.01);
+        }
+
+        .glass-btn:active {
+            transform: translateY(1px) scale(0.98);
         }
 
         .animated-gradient-text {
@@ -94,39 +112,69 @@
             animation: gradient-x 6s ease infinite;
         }
 
+        .messenger-btn {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .messenger-btn.active-telegram {
+            border-color: #0088cc !important;
+            background: rgba(0, 136, 204, 0.2) !important;
+            box-shadow: 0 0 15px rgba(0, 136, 204, 0.4);
+        }
+
+        .messenger-btn.active-rubika {
+            border-color: #a824e4 !important;
+            background: rgba(168, 36, 228, 0.2) !important;
+            box-shadow: 0 0 15px rgba(168, 36, 228, 0.4);
+        }
+
+        /* Custom Scrollbar */
         ::-webkit-scrollbar {
-            width: 5px;
+            width: 6px;
         }
         ::-webkit-scrollbar-track {
-            background: #0a0d14;
+            background: #05070c;
         }
         ::-webkit-scrollbar-thumb {
             background: #7000ff;
             border-radius: 4px;
         }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00f0ff;
+        }
+
+        /* Rubika SVG Icon */
+        .rubika-icon {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+            display: inline-block;
+        }
     </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between items-center antialiased selection:bg-xen-pink selection:text-white px-3 py-4 sm:p-6">
+<body class="min-h-screen flex flex-col justify-between items-center antialiased selection:bg-xen-pink selection:text-white px-3 py-5 sm:p-6">
 
-    <!-- Background Color Blur Effect -->
+    <!-- Background Color Blur Effects with Motion -->
     <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        <div class="absolute -top-24 -left-24 w-80 h-80 bg-xen-cyan/20 rounded-full blur-[100px] animate-pulse"></div>
-        <div class="absolute top-1/2 -right-24 w-80 h-80 bg-xen-purple/30 rounded-full blur-[120px] animate-pulse" style="animation-delay: 1s;"></div>
-        <div class="absolute -bottom-24 left-1/3 w-80 h-80 bg-xen-pink/20 rounded-full blur-[100px] animate-pulse" style="animation-delay: 2s;"></div>
+        <div class="absolute -top-28 -left-28 w-96 h-96 bg-xen-cyan/20 rounded-full blur-[110px] animate-pulse"></div>
+        <div class="absolute top-1/2 -right-28 w-96 h-96 bg-xen-purple/25 rounded-full blur-[130px] animate-pulse" style="animation-delay: 1s;"></div>
+        <div class="absolute -bottom-28 left-1/3 w-96 h-96 bg-xen-pink/20 rounded-full blur-[110px] animate-pulse" style="animation-delay: 2s;"></div>
     </div>
 
     <!-- Header Section -->
-    <header class="w-full max-w-lg z-10 text-center mb-4 relative">
+    <header class="w-full max-w-lg z-10 text-center mb-4 relative animate-float">
         <!-- Hidden Lock Button for Admin Panel Access -->
-        <button id="adminLockBtn" onclick="openAdminAuthModal()" class="absolute right-0 top-0 p-2 text-gray-400 hover:text-xen-cyan transition-colors duration-300 rounded-full hover:bg-white/5 active:scale-95" title="ورود به پنل">
-            <i class="fas fa-lock text-lg"></i>
+        <button id="adminLockBtn" onclick="openAdminAuthModal()" class="absolute right-0 top-0 p-2 text-gray-400 hover:text-xen-cyan transition-all duration-300 rounded-full hover:bg-white/5 active:scale-90" title="ورود به پنل مدیریت">
+            <i class="fas fa-lock text-xl"></i>
         </button>
 
-        <div class="inline-block px-3 py-1 rounded-full bg-xen-purple/20 border border-xen-purple/40 text-xen-cyan text-[11px] font-bold tracking-widest uppercase mb-2 animate-pulse-glow font-gaming">
+        <div class="inline-block px-3.5 py-1 rounded-full bg-xen-purple/20 border border-xen-purple/50 text-xen-cyan text-[11px] font-bold tracking-widest uppercase mb-2 animate-pulse-glow font-gaming">
             Call of Duty Clan Application
         </div>
         
-        <h1 class="text-3xl sm:text-4xl font-black tracking-wider uppercase font-gaming animated-gradient-text drop-shadow-md">
+        <h1 class="text-3xl sm:text-4xl font-black tracking-wider uppercase font-gaming animated-gradient-text drop-shadow-lg">
             XeN TESTING
         </h1>
         <p class="text-xs sm:text-sm text-gray-400 font-semibold tracking-wide mt-1">
@@ -135,7 +183,7 @@
     </header>
 
     <!-- Main Container / Form Section -->
-    <main class="w-full max-w-lg z-10 my-auto">
+    <main class="w-full max-w-lg z-10 my-auto animate-card-appear">
         <div class="glass-panel rounded-3xl p-5 sm:p-7 relative overflow-hidden">
             
             <div class="flex items-center justify-between pb-4 mb-5 border-b border-white/10">
@@ -144,7 +192,7 @@
                     <span class="text-xs font-bold text-gray-300 font-gaming tracking-wide">TEST FORM // ONLINE</span>
                 </div>
                 <div class="text-xs text-xen-pink font-gaming font-bold tracking-widest">
-                    SYSTEM V2.5
+                    SYSTEM V3.0
                 </div>
             </div>
 
@@ -157,7 +205,7 @@
                         <i class="fas fa-user text-xen-cyan ml-1"></i> اسم کوچک
                     </label>
                     <input type="text" id="applicantName" required placeholder="مثال: عرفان" 
-                        class="w-full bg-black/40 border border-white/10 focus:border-xen-cyan rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-xen-cyan transition-all">
+                        class="w-full bg-black/40 border border-white/10 focus:border-xen-cyan rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-xen-cyan/40 transition-all">
                 </div>
 
                 <!-- Age & Level -->
@@ -167,7 +215,7 @@
                             <i class="fas fa-hourglass-half text-xen-purple ml-1"></i> سن
                         </label>
                         <input type="number" id="applicantAge" min="10" max="80" required placeholder="مثال: 18" 
-                            class="w-full bg-black/40 border border-white/10 focus:border-xen-purple rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-xen-purple transition-all">
+                            class="w-full bg-black/40 border border-white/10 focus:border-xen-purple rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-xen-purple/40 transition-all">
                     </div>
 
                     <div>
@@ -175,18 +223,43 @@
                             <i class="fas fa-trophy text-yellow-400 ml-1"></i> لول بازی (حداکثر ۵۰۰)
                         </label>
                         <input type="number" id="applicantLevel" min="1" max="500" required placeholder="مثال: 350" 
-                            class="w-full bg-black/40 border border-white/10 focus:border-yellow-400 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-yellow-400 transition-all">
+                            class="w-full bg-black/40 border border-white/10 focus:border-yellow-400 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 transition-all">
                     </div>
                 </div>
 
-                <!-- Telegram ID -->
+                <!-- App Choice (Telegram / Rubika) -->
                 <div>
                     <label class="block text-xs font-bold text-gray-300 mb-1.5 pr-1">
-                        <i class="fab fa-telegram text-xen-cyan ml-1"></i> آیدی تلگرام
+                        <i class="fas fa-comments text-xen-cyan ml-1"></i> انتخاب پیام‌رسان جهت پاسخگویی
+                    </label>
+                    <div class="grid grid-cols-2 gap-3 mb-2">
+                        <!-- Telegram Button -->
+                        <button type="button" onclick="selectMessenger('telegram')" id="btn-msg-telegram"
+                            class="messenger-btn active-telegram bg-black/40 border border-white/10 rounded-xl py-3 px-3 text-xs font-bold text-white flex items-center justify-center gap-2">
+                            <i class="fab fa-telegram text-xen-telegram text-lg"></i>
+                            <span>تلگرام</span>
+                        </button>
+
+                        <!-- Rubika Button -->
+                        <button type="button" onclick="selectMessenger('rubika')" id="btn-msg-rubika"
+                            class="messenger-btn bg-black/40 border border-white/10 rounded-xl py-3 px-3 text-xs font-bold text-gray-300 flex items-center justify-center gap-2">
+                            <svg class="rubika-icon text-xen-rubika" viewBox="0 0 24 24">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 14.5h-2v-2h2v2zm0-4h-2V7h2v5.5z" fill="currentColor"/>
+                            </svg>
+                            <span>روبیکا</span>
+                        </button>
+                    </div>
+                    <input type="hidden" id="applicantMessenger" value="telegram">
+                </div>
+
+                <!-- ID Input (Telegram or Rubika) -->
+                <div>
+                    <label id="messengerIdLabel" class="block text-xs font-bold text-xen-cyan mb-1.5 pr-1 transition-all">
+                        <i class="fab fa-telegram ml-1"></i> آیدی تلگرام خود را وارد کنید
                     </label>
                     <div class="relative">
                         <input type="text" id="applicantTelegram" required placeholder="@username" dir="ltr"
-                            class="w-full bg-black/40 border border-white/10 focus:border-xen-cyan rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-xen-cyan transition-all text-left">
+                            class="w-full bg-black/40 border border-white/10 focus:border-xen-cyan rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-xen-cyan/40 transition-all text-left">
                     </div>
                 </div>
 
@@ -218,7 +291,7 @@
                         <i class="fas fa-mobile-alt ml-1"></i> مدل دقیق گوشی
                     </label>
                     <input type="text" id="applicantPhoneModel" placeholder="مثال: Poco F5 / iPhone 13 Pro" 
-                        class="w-full bg-xen-cyan/10 border border-xen-cyan/40 focus:border-xen-cyan rounded-xl px-4 py-3 text-sm text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-xen-cyan transition-all">
+                        class="w-full bg-xen-cyan/10 border border-xen-cyan/40 focus:border-xen-cyan rounded-xl px-4 py-3 text-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-xen-cyan/40 transition-all">
                 </div>
 
                 <!-- Submit Button -->
@@ -238,8 +311,8 @@
     </footer>
 
     <!-- Toast Modal -->
-    <div id="toastModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm hidden px-4">
-        <div class="glass-panel p-6 rounded-2xl max-w-sm w-full text-center space-y-4 border-xen-cyan/30">
+    <div id="toastModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md hidden px-4 transition-all">
+        <div class="glass-panel p-6 rounded-2xl max-w-sm w-full text-center space-y-4 border-xen-cyan/40 animate-card-appear">
             <div id="toastIcon" class="text-4xl text-xen-cyan mb-2"></div>
             <h3 id="toastTitle" class="text-lg font-bold text-white"></h3>
             <p id="toastMessage" class="text-xs text-gray-300 leading-relaxed"></p>
@@ -249,7 +322,7 @@
 
     <!-- Admin Authentication Modal -->
     <div id="adminAuthModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md hidden px-4">
-        <div class="glass-panel p-6 rounded-2xl max-w-xs w-full space-y-4 border-xen-purple/40">
+        <div class="glass-panel p-6 rounded-2xl max-w-xs w-full space-y-4 border-xen-purple/40 animate-card-appear">
             <div class="text-center">
                 <i class="fas fa-user-shield text-3xl text-xen-cyan mb-2"></i>
                 <h3 class="text-base font-bold text-white font-gaming">احراز هویت مدیریت</h3>
@@ -267,38 +340,43 @@
     </div>
 
     <!-- Admin Dashboard Modal -->
-    <div id="adminDashboardModal" class="fixed inset-0 z-50 bg-[#06080d]/95 backdrop-blur-xl hidden flex flex-col overflow-hidden">
+    <div id="adminDashboardModal" class="fixed inset-0 z-50 bg-[#05070c]/95 backdrop-blur-xl hidden flex flex-col overflow-hidden">
         <header class="p-4 bg-black/60 border-b border-white/10 flex items-center justify-between shrink-0">
             <div class="flex items-center gap-2">
                 <i class="fas fa-shield-alt text-xen-cyan text-lg"></i>
                 <span class="font-gaming font-bold text-sm tracking-wide text-white">XeN ADMIN PANEL</span>
             </div>
-            <button onclick="closeAdminDashboard()" class="text-gray-400 hover:text-white p-2">
-                <i class="fas fa-times text-xl"></i>
-            </button>
+            <div class="flex items-center gap-2">
+                <button onclick="fetchApplications()" class="text-xen-cyan hover:text-white p-2 rounded-lg bg-xen-cyan/10 hover:bg-xen-cyan/20 transition-all text-xs flex items-center gap-1 font-bold">
+                    <i class="fas fa-sync-alt"></i> بروزرسانی
+                </button>
+                <button onclick="closeAdminDashboard()" class="text-gray-400 hover:text-white p-2">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
         </header>
 
         <div class="flex border-b border-white/10 bg-black/30 shrink-0">
             <button id="tabNewBtn" onclick="switchAdminTab('new')" class="flex-1 py-3 text-xs font-bold border-b-2 border-xen-cyan text-xen-cyan flex items-center justify-center gap-2 transition-all">
                 <i class="fas fa-inbox"></i>
                 <span>درخواست‌های جدید</span>
-                <span id="badgeNewCount" class="px-2 py-0.5 text-[10px] rounded-full bg-xen-cyan/20 text-xen-cyan">0</span>
+                <span id="badgeNewCount" class="px-2 py-0.5 text-[10px] rounded-full bg-xen-cyan/20 text-xen-cyan font-gaming">0</span>
             </button>
             <button id="tabReviewedBtn" onclick="switchAdminTab('reviewed')" class="flex-1 py-3 text-xs font-bold border-b-2 border-transparent text-gray-400 hover:text-gray-200 flex items-center justify-center gap-2 transition-all">
                 <i class="fas fa-check-circle"></i>
                 <span>بررسی‌شده‌ها</span>
-                <span id="badgeReviewedCount" class="px-2 py-0.5 text-[10px] rounded-full bg-white/10 text-gray-300">0</span>
+                <span id="badgeReviewedCount" class="px-2 py-0.5 text-[10px] rounded-full bg-white/10 text-gray-300 font-gaming">0</span>
             </button>
         </div>
 
-        <main class="flex-1 overflow-y-auto p-4 space-y-3" id="adminRequestsList">
-            <!-- Dynamic Content -->
+        <main class="flex-1 overflow-y-auto p-3 sm:p-5 space-y-3" id="adminRequestsList">
+            <!-- Dynamic Applications Content -->
         </main>
     </div>
 
-    <!-- Main Logic Script -->
+    <!-- Main Script Code -->
     <script>
-        // Supabase Database Setup
+        // Supabase Database Connection Setup
         const SUPABASE_URL = "https://jrehjxsdmdfwkprdfyvt.supabase.co";
         const SUPABASE_ANON_KEY = "sb_publishable_Sa8VoD30bdM6WMpPKHMkxg_VrTPHAee";
         
@@ -306,11 +384,37 @@
         try {
             _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         } catch (err) {
-            console.error("Supabase Initialization Failed", err);
+            console.error("خطا در اتصال به Supabase:", err);
         }
 
         let applicationsList = [];
         let activeAdminTab = 'new';
+
+        // Select Messenger Platform (Telegram / Rubika)
+        function selectMessenger(platform) {
+            document.getElementById('applicantMessenger').value = platform;
+            
+            const btnTelegram = document.getElementById('btn-msg-telegram');
+            const btnRubika = document.getElementById('btn-msg-rubika');
+            const label = document.getElementById('messengerIdLabel');
+            const input = document.getElementById('applicantTelegram');
+
+            if (platform === 'telegram') {
+                btnTelegram.className = 'messenger-btn active-telegram bg-black/40 border border-white/10 rounded-xl py-3 px-3 text-xs font-bold text-white flex items-center justify-center gap-2';
+                btnRubika.className = 'messenger-btn bg-black/40 border border-white/10 rounded-xl py-3 px-3 text-xs font-bold text-gray-300 flex items-center justify-center gap-2';
+                label.innerHTML = '<i class="fab fa-telegram text-xen-telegram ml-1"></i> آیدی تلگرام خود را وارد کنید';
+                label.className = 'block text-xs font-bold text-xen-cyan mb-1.5 pr-1 transition-all';
+                input.placeholder = '@username';
+                input.focus();
+            } else {
+                btnRubika.className = 'messenger-btn active-rubika bg-black/40 border border-white/10 rounded-xl py-3 px-3 text-xs font-bold text-white flex items-center justify-center gap-2';
+                btnTelegram.className = 'messenger-btn bg-black/40 border border-white/10 rounded-xl py-3 px-3 text-xs font-bold text-gray-300 flex items-center justify-center gap-2';
+                label.innerHTML = '<i class="fas fa-at text-xen-rubika ml-1"></i> آیدی روبیکا خود را وارد کنید';
+                label.className = 'block text-xs font-bold text-xen-rubika mb-1.5 pr-1 transition-all';
+                input.placeholder = '@rubika_id';
+                input.focus();
+            }
+        }
 
         // Select Device Type
         function selectDevice(deviceType) {
@@ -338,19 +442,20 @@
             }
         }
 
-        // Form Submission to Supabase
+        // Form Submission Handler
         async function handleFormSubmit(event) {
             event.preventDefault();
             
             const name = document.getElementById('applicantName').value.trim();
             const age = document.getElementById('applicantAge').value.trim();
             const level = document.getElementById('applicantLevel').value.trim();
-            const telegram = document.getElementById('applicantTelegram').value.trim();
+            const messenger = document.getElementById('applicantMessenger').value;
+            let messengerId = document.getElementById('applicantTelegram').value.trim();
             const device = document.getElementById('applicantDevice').value;
             const phoneModel = document.getElementById('applicantPhoneModel').value.trim();
 
             if (!device) {
-                showToast('خطا در تکمیل فرم', 'لطفاً نوع دیوایس خود را انتخاب کنید.', 'fa-exclamation-triangle');
+                showToast('خطا در ثبت', 'لطفاً نوع دیوایس خود را انتخاب کنید.', 'fa-exclamation-triangle');
                 return;
             }
 
@@ -359,15 +464,22 @@
                 return;
             }
 
+            if (!messengerId.startsWith('@')) {
+                messengerId = '@' + messengerId;
+            }
+
+            // Standardize format to store platform along with ID without database schema changes
+            const formattedTelegramField = messenger === 'rubika' ? `[روبیکا] ${messengerId}` : messengerId;
+
             const submitBtn = document.getElementById('submitBtn');
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>در حال ثبت در دیتابیس...</span>';
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>در حال ثبت اطلاعات...</span>';
 
             const payload = {
                 name: name,
                 age: age,
                 level: level,
-                telegram: telegram.startsWith('@') ? telegram : '@' + telegram,
+                telegram: formattedTelegramField,
                 device: device,
                 model: (device === 'Android' || device === 'iOS') ? phoneModel : 'PC',
                 status: 'new'
@@ -377,180 +489,32 @@
                 if (_supabase) {
                     const { data, error } = await _supabase.from('recruits').insert([payload]);
                     if (error) throw error;
-                } else {
-                    throw new Error("Supabase is not loaded");
                 }
-
-                showToast('ارسال موفقیت‌آمیز', 'اطلاعات شما با موفقیت در دیتابیس ذخیره شد.', 'fa-check-circle');
                 
-                document.getElementById('clanApplyForm').reset();
-                document.getElementById('applicantDevice').value = '';
-                document.querySelectorAll('.device-btn').forEach(btn => {
-                    btn.classList.remove('border-xen-cyan', 'bg-xen-cyan/20', 'text-xen-cyan');
-                });
-                document.getElementById('phoneModelContainer').classList.add('hidden');
+                showToast(
+                    'درخواست با موفقیت ثبت شد 🎉',
+                    `اطلاعات شما جهت تست در کلن XeN FAMILY ثبت گردید. منتظر پاسخ ادمین کلن در ${messenger === 'rubika' ? 'روبیکا' : 'تلگرام'} باشید.`,
+                    'fa-check-circle text-green-400'
+                );
 
-            } catch (error) {
-                console.error("Submission Error:", error);
-                showToast('خطا در ارسال', 'مشکلی در اتصال به دیتابیس رخ داد. مجدداً تلاش فرمایید.', 'fa-times-circle');
+                document.getElementById('clanApplyForm').reset();
+                selectMessenger('telegram');
+                selectDevice('PC');
+
+            } catch (err) {
+                console.error("Submit Error:", err);
+                showToast('خطا در برقراری ارتباط', 'متأسفانه در ثبت اطلاعات خطایی رخ داد. مجدداً تلاش کنید.', 'fa-times-circle text-red-500');
             } finally {
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = '<span>ارسال اطلاعات درخواست</span><i class="fas fa-paper-plane text-xen-cyan"></i>';
+                submitBtn.innerHTML = '<span>ارسال اطلاعات درخواست</span> <i class="fas fa-paper-plane text-xen-cyan"></i>';
             }
         }
 
-        // Admin Auth
-        function openAdminAuthModal() {
-            document.getElementById('adminAuthModal').classList.remove('hidden');
-            document.getElementById('adminPasswordInput').value = '';
-            document.getElementById('adminPasswordInput').focus();
-        }
-
-        function closeAdminAuthModal() {
-            document.getElementById('adminAuthModal').classList.add('hidden');
-        }
-
-        function verifyAdminPassword() {
-            const pass = document.getElementById('adminPasswordInput').value;
-            const securePass = "Hahbsisjjsjsjsbsb71626";
-            
-            if (pass === securePass) {
-                closeAdminAuthModal();
-                openAdminDashboard();
-            } else {
-                showToast('خطای دسترسی', 'رمز عبور پنل مدیریت اشتباه است.', 'fa-lock');
-            }
-        }
-
-        // Admin Dashboard Functions
-        async function openAdminDashboard() {
-            document.getElementById('adminDashboardModal').classList.remove('hidden');
-            await fetchApplicationsFromDatabase();
-        }
-
-        function closeAdminDashboard() {
-            document.getElementById('adminDashboardModal').classList.add('hidden');
-        }
-
-        async function fetchApplicationsFromDatabase() {
-            const container = document.getElementById('adminRequestsList');
-            container.innerHTML = '<div class="text-center py-12 text-xen-cyan"><i class="fas fa-spinner fa-spin text-2xl"></i><p class="text-xs mt-2">در حال بارگذاری اطلاعات...</p></div>';
-
-            try {
-                if (_supabase) {
-                    const { data, error } = await _supabase.from('recruits').select('*').order('id', { ascending: false });
-                    if (error) throw error;
-                    applicationsList = data || [];
-                }
-            } catch (err) {
-                console.error("Fetch error:", err);
-                showToast('خطا', 'مشکلی در دریافت داده‌ها از دیتابیس پیش آمد.', 'fa-exclamation-triangle');
-            }
-            renderAdminRequests();
-        }
-
-        function switchAdminTab(tabName) {
-            activeAdminTab = tabName;
-            const tabNewBtn = document.getElementById('tabNewBtn');
-            const tabReviewedBtn = document.getElementById('tabReviewedBtn');
-
-            if (tabName === 'new') {
-                tabNewBtn.className = "flex-1 py-3 text-xs font-bold border-b-2 border-xen-cyan text-xen-cyan flex items-center justify-center gap-2 transition-all";
-                tabReviewedBtn.className = "flex-1 py-3 text-xs font-bold border-b-2 border-transparent text-gray-400 hover:text-gray-200 flex items-center justify-center gap-2 transition-all";
-            } else {
-                tabReviewedBtn.className = "flex-1 py-3 text-xs font-bold border-b-2 border-xen-pink text-xen-pink flex items-center justify-center gap-2 transition-all";
-                tabNewBtn.className = "flex-1 py-3 text-xs font-bold border-b-2 border-transparent text-gray-400 hover:text-gray-200 flex items-center justify-center gap-2 transition-all";
-            }
-
-            renderAdminRequests();
-        }
-
-        function renderAdminRequests() {
-            const container = document.getElementById('adminRequestsList');
-            container.innerHTML = '';
-
-            const newItems = applicationsList.filter(item => item.status === 'new' || !item.status);
-            const reviewedItems = applicationsList.filter(item => item.status === 'reviewed');
-
-            document.getElementById('badgeNewCount').textContent = newItems.length;
-            document.getElementById('badgeReviewedCount').textContent = reviewedItems.length;
-
-            const displayList = activeAdminTab === 'new' ? newItems : reviewedItems;
-
-            if (displayList.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center py-12 text-gray-500">
-                        <i class="fas fa-inbox text-4xl mb-3 opacity-40"></i>
-                        <p class="text-xs">هیچ درخواستی در این بخش وجود ندارد.</p>
-                    </div>
-                `;
-                return;
-            }
-
-            displayList.forEach(item => {
-                const card = document.createElement('div');
-                card.className = "glass-panel p-4 rounded-2xl space-y-3 border-white/10 relative overflow-hidden";
-                
-                card.innerHTML = `
-                    <div class="flex items-center justify-between border-b border-white/10 pb-2">
-                        <div class="flex items-center gap-2">
-                            <span class="text-sm font-bold text-white">${escapeHtml(item.name)}</span>
-                            <span class="px-2 py-0.5 rounded-md bg-xen-purple/30 border border-xen-purple/50 text-xen-cyan text-[10px] font-bold">
-                                لول ${escapeHtml(item.level)}
-                            </span>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-2 text-xs text-gray-300">
-                        <div><strong class="text-gray-400">سن:</strong> ${escapeHtml(item.age)} سال</div>
-                        <div><strong class="text-gray-400">تلگرام:</strong> <a href="https://t.me/${escapeHtml(item.telegram).replace('@','')}" target="_blank" class="text-xen-cyan underline">${escapeHtml(item.telegram)}</a></div>
-                        <div><strong class="text-gray-400">دیوایس:</strong> ${escapeHtml(item.device)}</div>
-                        ${item.device !== 'PC' ? `<div class="col-span-2"><strong class="text-gray-400">مدل گوشی:</strong> <span class="text-xen-pink">${escapeHtml(item.model)}</span></div>` : ''}
-                    </div>
-
-                    <div class="flex gap-2 pt-2 border-t border-white/10">
-                        ${(item.status === 'new' || !item.status) ? `
-                            <button onclick="markAsReviewed('${item.id}')" class="flex-1 bg-xen-cyan/20 hover:bg-xen-cyan/30 border border-xen-cyan/50 text-xen-cyan py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1">
-                                <i class="fas fa-check"></i> انتقال به بررسی‌شده‌ها
-                            </button>
-                        ` : ''}
-                        <button onclick="deleteRequest('${item.id}')" class="px-3 bg-red-500/20 hover:bg-red-500/30 border border-red-500/40 text-red-400 py-2 rounded-xl text-xs font-bold transition-all" title="حذف">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-        }
-
-        async function markAsReviewed(id) {
-            try {
-                if (_supabase) {
-                    await _supabase.from('recruits').update({ status: 'reviewed' }).eq('id', id);
-                    await fetchApplicationsFromDatabase();
-                }
-            } catch (e) {
-                console.error("Update error:", e);
-            }
-        }
-
-        async function deleteRequest(id) {
-            if (confirm('آیا از حذف این درخواست اطمینان دارید؟')) {
-                try {
-                    if (_supabase) {
-                        await _supabase.from('recruits').delete().eq('id', id);
-                        await fetchApplicationsFromDatabase();
-                    }
-                } catch (e) {
-                    console.error("Delete error:", e);
-                }
-            }
-        }
-
-        function showToast(title, message, iconClass = 'fa-info-circle') {
-            document.getElementById('toastTitle').textContent = title;
-            document.getElementById('toastMessage').textContent = message;
-            document.getElementById('toastIcon').innerHTML = `<i class="fas ${iconClass}"></i>`;
+        // Toast Modal Handler
+        function showToast(title, message, iconClass) {
+            document.getElementById('toastTitle').innerText = title;
+            document.getElementById('toastMessage').innerText = message;
+            document.getElementById('toastIcon').className = `text-4xl mb-2 fas ${iconClass}`;
             document.getElementById('toastModal').classList.remove('hidden');
         }
 
@@ -558,9 +522,271 @@
             document.getElementById('toastModal').classList.add('hidden');
         }
 
-        function escapeHtml(str) {
-            return String(str || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+        // Admin Auth Flow
+        function openAdminAuthModal() {
+            document.getElementById('adminAuthModal').classList.remove('hidden');
+            document.getElementById('adminPasswordInput').focus();
         }
+
+        function closeAdminAuthModal() {
+            document.getElementById('adminAuthModal').classList.add('hidden');
+            document.getElementById('adminPasswordInput').value = '';
+        }
+
+        function verifyAdminPassword() {
+            const pass = document.getElementById('adminPasswordInput').value;
+            if (pass === 'Hahbsisjjsjsjsbsb71626') {
+                closeAdminAuthModal();
+                document.getElementById('adminDashboardModal').classList.remove('hidden');
+                fetchApplications();
+            } else {
+                alert('رمز عبور مدیریت اشتباه است!');
+            }
+        }
+
+        function closeAdminDashboard() {
+            document.getElementById('adminDashboardModal').classList.hidden = true;
+            document.getElementById('adminDashboardModal').classList.add('hidden');
+        }
+
+        // Fetch Data from Supabase
+        async function fetchApplications() {
+            const container = document.getElementById('adminRequestsList');
+            container.innerHTML = '<div class="text-center py-10 text-xen-cyan"><i class="fas fa-circle-notch fa-spin text-3xl"></i><p class="mt-2 text-xs">در حال دریافت داده‌ها از دیتابیس...</p></div>';
+
+            try {
+                if (_supabase) {
+                    const { data, error } = await _supabase
+                        .from('recruits')
+                        .select('*')
+                        .order('created_at', { ascending: false });
+
+                    if (error) throw error;
+                    applicationsList = data || [];
+                }
+                renderAdminList();
+            } catch (err) {
+                console.error("Error Fetching Data:", err);
+                container.innerHTML = '<div class="text-center py-8 text-red-400 text-xs"><i class="fas fa-exclamation-triangle text-2xl mb-2"></i><p>خطا در دریافت اطلاعات دیتابیس.</p></div>';
+            }
+        }
+
+        function switchAdminTab(tab) {
+            activeAdminTab = tab;
+            const tabNewBtn = document.getElementById('tabNewBtn');
+            const tabReviewedBtn = document.getElementById('tabReviewedBtn');
+
+            if (tab === 'new') {
+                tabNewBtn.className = 'flex-1 py-3 text-xs font-bold border-b-2 border-xen-cyan text-xen-cyan flex items-center justify-center gap-2 transition-all';
+                tabReviewedBtn.className = 'flex-1 py-3 text-xs font-bold border-b-2 border-transparent text-gray-400 hover:text-gray-200 flex items-center justify-center gap-2 transition-all';
+            } else {
+                tabReviewedBtn.className = 'flex-1 py-3 text-xs font-bold border-b-2 border-xen-purple text-xen-purple flex items-center justify-center gap-2 transition-all';
+                tabNewBtn.className = 'flex-1 py-3 text-xs font-bold border-b-2 border-transparent text-gray-400 hover:text-gray-200 flex items-center justify-center gap-2 transition-all';
+            }
+            renderAdminList();
+        }
+
+        function renderAdminList() {
+            const container = document.getElementById('adminRequestsList');
+            
+            const newRequests = applicationsList.filter(item => item.status === 'new' || !item.status);
+            const reviewedRequests = applicationsList.filter(item => item.status === 'reviewed');
+
+            document.getElementById('badgeNewCount').innerText = newRequests.length;
+            document.getElementById('badgeReviewedCount').innerText = reviewedRequests.length;
+
+            const currentList = activeAdminTab === 'new' ? newRequests : reviewedRequests;
+
+            if (currentList.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12 text-gray-500">
+                        <i class="fas fa-inbox text-4xl mb-2 opacity-50"></i>
+                        <p class="text-xs font-bold">هیچ درخواستی در این بخش موجود نیست.</p>
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = currentList.map(item => {
+                const isRubika = item.telegram && item.telegram.includes('[روبیکا]');
+                const cleanId = item.telegram ? item.telegram.replace('[روبیکا]', '').trim() : 'ثبت‌نشده';
+                const appName = isRubika ? 'روبیکا' : 'تلگرام';
+                const badgeColor = isRubika ? 'bg-xen-rubika/20 text-xen-rubika border-xen-rubika/40' : 'bg-xen-telegram/20 text-xen-telegram border-xen-telegram/40';
+
+                return `
+                    <div class="glass-panel p-4 rounded-2xl border-white/10 hover:border-xen-cyan/40 transition-all space-y-3 relative group animate-card-appear">
+                        <div class="flex items-start justify-between border-b border-white/10 pb-2">
+                            <div>
+                                <h4 class="text-sm font-bold text-white flex items-center gap-2">
+                                    <span>${escapeHtml(item.name || 'بدون نام')}</span>
+                                    <span class="text-[10px] px-2 py-0.5 rounded-full font-normal border ${badgeColor}">
+                                        ${appName}
+                                    </span>
+                                </h4>
+                                <p class="text-[11px] text-gray-400 mt-0.5">آیدی ${appName}: <span class="text-xen-cyan font-mono" dir="ltr">${escapeHtml(cleanId)}</span></p>
+                            </div>
+                            <span class="text-[10px] font-gaming text-gray-500">${formatDate(item.created_at)}</span>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-2 text-center text-xs">
+                            <div class="bg-black/30 rounded-lg p-1.5 border border-white/5">
+                                <span class="block text-[10px] text-gray-400">سن</span>
+                                <span class="font-bold text-white">${escapeHtml(String(item.age || '-'))} سال</span>
+                            </div>
+                            <div class="bg-black/30 rounded-lg p-1.5 border border-white/5">
+                                <span class="block text-[10px] text-gray-400">لول</span>
+                                <span class="font-bold text-yellow-400 font-gaming">${escapeHtml(String(item.level || '-'))}</span>
+                            </div>
+                            <div class="bg-black/30 rounded-lg p-1.5 border border-white/5">
+                                <span class="block text-[10px] text-gray-400">دیوایس</span>
+                                <span class="font-bold text-xen-cyan">${escapeHtml(item.device || 'PC')} ${item.model && item.model !== 'PC' ? `(${escapeHtml(item.model)})` : ''}</span>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-2 pt-1">
+                            <!-- Copy Formatted Text Button -->
+                            <button onclick="copyFormattedApplicantInfo('${item.id}')" class="flex-1 bg-xen-cyan/15 hover:bg-xen-cyan/25 border border-xen-cyan/40 text-xen-cyan rounded-xl py-2 text-xs font-bold flex items-center justify-center gap-1.5 transition-all active:scale-95">
+                                <i class="fas fa-copy"></i>
+                                <span>کپی اطلاعات کاربر 📋</span>
+                            </button>
+
+                            ${activeAdminTab === 'new' ? `
+                                <button onclick="toggleStatus('${item.id}', 'reviewed')" class="bg-green-500/20 hover:bg-green-500/30 border border-green-500/40 text-green-400 rounded-xl px-3 py-2 text-xs font-bold transition-all" title="تایید و انتقال به بررسی‌شده">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                            ` : `
+                                <button onclick="toggleStatus('${item.id}', 'new')" class="bg-yellow-500/20 hover:bg-yellow-500/30 border border-yellow-500/40 text-yellow-400 rounded-xl px-3 py-2 text-xs font-bold transition-all" title="بازگردانی به جدیدها">
+                                    <i class="fas fa-undo"></i>
+                                </button>
+                            `}
+
+                            <button onclick="deleteApplicant('${item.id}')" class="bg-red-500/20 hover:bg-red-500/30 border border-red-500/40 text-red-400 rounded-xl px-3 py-2 text-xs font-bold transition-all" title="حذف درخواست">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Copy Formatted Information to Clipboard with Emojis
+        function copyFormattedApplicantInfo(id) {
+            const item = applicationsList.find(a => String(a.id) === String(id));
+            if (!item) return;
+
+            const isRubika = item.telegram && item.telegram.includes('[روبیکا]');
+            const cleanId = item.telegram ? item.telegram.replace('[روبیکا]', '').trim() : 'ثبت‌نشده';
+            const messengerName = isRubika ? '🟣 روبیکا' : '🔵 تلگرام';
+            const deviceDetails = item.model && item.model !== 'PC' ? `${item.device} (${item.model})` : item.device || 'PC';
+            const statusText = item.status === 'reviewed' ? '✅ بررسی‌شده' : '⏳ جدید';
+
+            const formattedText = 
+`🎮 ━━━━━━━━━━━━━━━━━━━
+🔥 درخواست تست ورودی کلن XeN FAMILY
+━━━━━━━━━━━━━━━━━━━
+👤 نام: ${item.name || 'نامشخص'}
+🎂 سن: ${item.age || '-'} سال
+⭐ لول بازی: ${item.level || '-'}
+📲 پیام‌رسان: ${messengerName}
+🆔 آیدی: ${cleanId}
+💻 دیوایس: ${deviceDetails}
+📊 وضعیت: ${statusText}
+━━━━━━━━━━━━━━━━━━━
+✨ ثبت‌شده در پنل رسمی XeN TESTING`;
+
+            // Compatibility copy function for clipboard
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(formattedText).then(() => {
+                    alert('اطلاعات کامل کاربر با فرمت خفن و ایموجی در حافظه کپی شد! 📋🔥');
+                }).catch(err => {
+                    fallbackCopy(formattedText);
+                });
+            } else {
+                fallbackCopy(formattedText);
+            }
+        }
+
+        function fallbackCopy(text) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                alert('اطلاعات کاربر با موفقیت کپی شد! 📋🔥');
+            } catch (err) {
+                alert('خطا در کپی اطلاعات!');
+            }
+            document.body.removeChild(textArea);
+        }
+
+        // Toggle Status Between New and Reviewed
+        async function toggleStatus(id, newStatus) {
+            try {
+                if (_supabase) {
+                    const { error } = await _supabase
+                        .from('recruits')
+                        .update({ status: newStatus })
+                        .eq('id', id);
+
+                    if (error) throw error;
+                }
+                
+                const item = applicationsList.find(a => String(a.id) === String(id));
+                if (item) item.status = newStatus;
+                renderAdminList();
+
+            } catch (err) {
+                console.error("Error Updating Status:", err);
+                alert("خطا در بروزرسانی وضعیت!");
+            }
+        }
+
+        // Delete Applicant Record
+        async function deleteApplicant(id) {
+            if (!confirm("آیا از حذف این درخواست مطمئن هستید؟")) return;
+
+            try {
+                if (_supabase) {
+                    const { error } = await _supabase
+                        .from('recruits')
+                        .delete()
+                        .eq('id', id);
+
+                    if (error) throw error;
+                }
+
+                applicationsList = applicationsList.filter(a => String(a.id) !== String(id));
+                renderAdminList();
+
+            } catch (err) {
+                console.error("Error Deleting:", err);
+                alert("خطا در حذف درخواست!");
+            }
+        }
+
+        // Helper Utility Functions
+        function formatDate(dateStr) {
+            if (!dateStr) return '';
+            try {
+                const date = new Date(dateStr);
+                return new Intl.DateTimeFormat('fa-IR', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }).format(date);
+            } catch (e) {
+                return '';
+            }
+        }
+
+        function escapeHtml(str) {
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        // Initialize Form State
+        selectMessenger('telegram');
+        selectDevice('PC');
     </script>
 </body>
 </html>
