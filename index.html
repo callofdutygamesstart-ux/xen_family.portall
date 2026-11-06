@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- Supabase JS Client -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4"></script>
 
     <script>
         tailwind.config = {
@@ -165,7 +165,7 @@
 
     <!-- Header Section -->
     <header class="w-full max-w-lg z-10 text-center mb-4 relative animate-float">
-        <!-- Hidden Lock Button for Admin Panel Access -->
+        <!-- Lock Button for Admin Panel Access -->
         <button id="adminLockBtn" onclick="openAdminAuthModal()" class="absolute right-0 top-0 p-2 text-gray-400 hover:text-xen-cyan transition-all duration-300 rounded-full hover:bg-white/5 active:scale-90" title="ورود به پنل مدیریت">
             <i class="fas fa-lock text-xl"></i>
         </button>
@@ -204,7 +204,7 @@
                     <label class="block text-xs font-bold text-gray-300 mb-1.5 pr-1">
                         <i class="fas fa-user text-xen-cyan ml-1"></i> اسم کوچک
                     </label>
-                    <input type="text" id="applicantName" required placeholder="مثال: عرفان" 
+                    <input type="text" id="applicantName" required maxlength="30" autocomplete="off" placeholder="مثال: عرفان" 
                         class="w-full bg-black/40 border border-white/10 focus:border-xen-cyan rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-xen-cyan/40 transition-all">
                 </div>
 
@@ -258,7 +258,7 @@
                         <i class="fab fa-telegram ml-1"></i> آیدی تلگرام خود را وارد کنید
                     </label>
                     <div class="relative">
-                        <input type="text" id="applicantTelegram" required placeholder="@username" dir="ltr"
+                        <input type="text" id="applicantTelegram" required maxlength="40" autocomplete="off" placeholder="@username" dir="ltr"
                             class="w-full bg-black/40 border border-white/10 focus:border-xen-cyan rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-xen-cyan/40 transition-all text-left">
                     </div>
                 </div>
@@ -290,9 +290,11 @@
                     <label class="block text-xs font-bold text-xen-cyan mb-1.5 pr-1 animate-pulse">
                         <i class="fas fa-mobile-alt ml-1"></i> مدل دقیق گوشی
                     </label>
-                    <input type="text" id="applicantPhoneModel" placeholder="مثال: Poco F5 / iPhone 13 Pro" 
+                    <input type="text" id="applicantPhoneModel" maxlength="30" placeholder="مثال: Poco F5 / iPhone 13 Pro" 
                         class="w-full bg-xen-cyan/10 border border-xen-cyan/40 focus:border-xen-cyan rounded-xl px-4 py-3 text-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-xen-cyan/40 transition-all">
                 </div>
+
+                <input type="text" id="websiteField" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" class="hidden">
 
                 <!-- Submit Button -->
                 <div class="pt-2">
@@ -326,10 +328,13 @@
             <div class="text-center">
                 <i class="fas fa-user-shield text-3xl text-xen-cyan mb-2"></i>
                 <h3 class="text-base font-bold text-white font-gaming">احراز هویت مدیریت</h3>
-                <p class="text-xs text-gray-400 mt-1">رمز عبور اختصاصی مدیریت را وارد کنید</p>
+                <p class="text-xs text-gray-400 mt-1">ایمیل و رمز عبور حساب مدیریت را وارد کنید</p>
             </div>
-            <div>
-                <input type="password" id="adminPasswordInput" placeholder="••••••••••••" 
+            <div class="space-y-2">
+                <input type="email" id="adminEmailInput" dir="ltr" autocomplete="username" placeholder="admin@email.com"
+                    class="w-full bg-black/50 border border-white/20 focus:border-xen-purple rounded-xl px-4 py-2.5 text-center text-sm text-white focus:outline-none">
+                <input type="password" id="adminPasswordInput" autocomplete="current-password" placeholder="••••••••••••" 
+                    onkeydown="if(event.key==='Enter') verifyAdminPassword()"
                     class="w-full bg-black/50 border border-white/20 focus:border-xen-purple rounded-xl px-4 py-2.5 text-center text-sm text-white focus:outline-none tracking-widest">
             </div>
             <div class="flex gap-2">
@@ -377,18 +382,74 @@
     <!-- Main Script Code -->
     <script>
         // Supabase Database Connection Setup
-        const SUPABASE_URL = "https://jrehjxsdmdfwkprdfyvt.supabase.co";
-        const SUPABASE_ANON_KEY = "sb_publishable_Sa8VoD30bdM6WMpPKHMkxg_VrTPHAee";
+        const SUPABASE_URL = "https://stcwksdgvqmjziproqpw.supabase.co";
+        const SUPABASE_ANON_KEY = "sb_publishable_qTw42YSDRy_M-i7Yh6v04g_2rrzx6fv";
         
+
         let _supabase = null;
         try {
-            _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            if (typeof supabase !== 'undefined') {
+                _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            }
         } catch (err) {
             console.error("خطا در اتصال به Supabase:", err);
         }
 
         let applicationsList = [];
         let activeAdminTab = 'new';
+
+
+        // ===== Profanity filter (Persian + obfuscation-proof) =====
+        const BANNED_FA = ['کص', 'کلن', 'کلنتون', 'مادرتون', 'ننتون', 'ننت', 'مادر', 'ننه', 'کیر'];
+        const BANNED_EN = ['kir', 'kos', 'kose', 'madar', 'nane', 'nanat', 'klan'];
+
+        // Allows any letter to be repeated, but keeps real double letters (e.g. "ننه" needs 2+ ن)
+        function buildPattern(word) {
+            const ch = [...word];
+            let out = '', i = 0;
+            while (i < ch.length) {
+                let j = i;
+                while (j < ch.length && ch[j] === ch[i]) j++;
+                const c = j - i;
+                out += c > 1 ? `${ch[i]}{${c},}` : `${ch[i]}+`;
+                i = j;
+            }
+            return new RegExp(out);
+        }
+        const FA_PATTERNS = BANNED_FA.map(buildPattern);
+        const EN_PATTERNS = BANNED_EN.map(buildPattern);
+
+        // Unify Arabic/Persian letter forms, then drop EVERYTHING except Persian letters
+        // (dots, spaces, ZWNJ, tatweel, digits, symbols, emoji, diacritics...)
+        function normalizeFa(str) {
+            return String(str).normalize('NFKC')
+                .replace(/[يى]/g, 'ی').replace(/ك/g, 'ک')
+                .replace(/[ۀةە]/g, 'ه').replace(/[أإآٱ]/g, 'ا')
+                .replace(/[^\u0621-\u063A\u0641-\u064A\u067E\u0686\u0698\u06A9\u06AF\u06CC]/g, '');
+        }
+
+        // Finglish / leetspeak: k.i.r  k1r  m@dar ...
+        function normalizeEn(str) {
+            return String(str).normalize('NFKC').toLowerCase()
+                .replace(/[1!|]/g, 'i').replace(/0/g, 'o').replace(/3/g, 'e')
+                .replace(/[4@]/g, 'a').replace(/[5$]/g, 's')
+                .replace(/[^a-z]/g, '');
+        }
+
+        function containsBanned(text, checkLatin) {
+            if (!text) return false;
+            const fa = normalizeFa(text);
+            if (FA_PATTERNS.some(r => r.test(fa))) return true;
+            if (checkLatin) {
+                const en = normalizeEn(text);
+                if (EN_PATTERNS.some(r => r.test(en))) return true;
+            }
+            return false;
+        }
+
+        function showProfanityError() {
+            showToast('ورودی غیرمجاز 🚫', 'خودتی! 😎 لطفاً محترمانه بنویس.', 'fa-ban text-red-500');
+        }
 
         // Select Messenger Platform (Telegram / Rubika)
         function selectMessenger(platform) {
@@ -454,6 +515,19 @@
             const device = document.getElementById('applicantDevice').value;
             const phoneModel = document.getElementById('applicantPhoneModel').value.trim();
 
+            // Bot trap + client cooldown (the real limits live in the database)
+            if (document.getElementById('websiteField').value) return;
+            const lastSent = parseInt(localStorage.getItem('xen_last_submit') || '0', 10);
+            if (Date.now() - lastSent < 60000) {
+                showToast('کمی صبر کن', 'هر ۶۰ ثانیه فقط یک درخواست می‌توانی بفرستی.', 'fa-hourglass-half');
+                return;
+            }
+
+            if (containsBanned(name, true) || containsBanned(messengerId, false) || containsBanned(phoneModel, false)) {
+                showProfanityError();
+                return;
+            }
+
             if (!device) {
                 showToast('خطا در ثبت', 'لطفاً نوع دیوایس خود را انتخاب کنید.', 'fa-exclamation-triangle');
                 return;
@@ -468,7 +542,6 @@
                 messengerId = '@' + messengerId;
             }
 
-            // Standardize format to store platform along with ID without database schema changes
             const formattedTelegramField = messenger === 'rubika' ? `[روبیکا] ${messengerId}` : messengerId;
 
             const submitBtn = document.getElementById('submitBtn');
@@ -486,10 +559,10 @@
             };
 
             try {
-                if (_supabase) {
-                    const { data, error } = await _supabase.from('recruits').insert([payload]);
-                    if (error) throw error;
-                }
+                if (!_supabase) throw new Error('no-connection');
+                const { error } = await _supabase.from('recruits').insert([payload]);
+                if (error) throw error;
+                localStorage.setItem('xen_last_submit', String(Date.now()));
                 
                 showToast(
                     'درخواست با موفقیت ثبت شد 🎉',
@@ -503,6 +576,7 @@
 
             } catch (err) {
                 console.error("Submit Error:", err);
+                if (String(err && err.message).includes('inappropriate_content')) { showProfanityError(); return; }
                 showToast('خطا در برقراری ارتباط', 'متأسفانه در ثبت اطلاعات خطایی رخ داد. مجدداً تلاش کنید.', 'fa-times-circle text-red-500');
             } finally {
                 submitBtn.disabled = false;
@@ -525,28 +599,37 @@
         // Admin Auth Flow
         function openAdminAuthModal() {
             document.getElementById('adminAuthModal').classList.remove('hidden');
-            document.getElementById('adminPasswordInput').focus();
+            document.getElementById('adminPasswordInput').value = '';
+            document.getElementById('adminEmailInput').focus();
         }
 
         function closeAdminAuthModal() {
             document.getElementById('adminAuthModal').classList.add('hidden');
             document.getElementById('adminPasswordInput').value = '';
+            document.getElementById('adminEmailInput').value = '';
         }
 
-        function verifyAdminPassword() {
-            const pass = document.getElementById('adminPasswordInput').value;
-            if (pass === 'Hahbsisjjsjsjsbsb71626') {
-                closeAdminAuthModal();
-                document.getElementById('adminDashboardModal').classList.remove('hidden');
-                fetchApplications();
-            } else {
-                alert('رمز عبور مدیریت اشتباه است!');
+        async function verifyAdminPassword() {
+            const email = document.getElementById('adminEmailInput').value.trim();
+            const password = document.getElementById('adminPasswordInput').value;
+            if (!email || !password || !_supabase) return;
+
+            // Real server-side login via Supabase Auth (no password stored in the page)
+            const { error } = await _supabase.auth.signInWithPassword({ email, password });
+            if (error) {
+                document.getElementById('adminPasswordInput').value = '';
+                alert('ایمیل یا رمز عبور اشتباه است!');
+                return;
             }
+            closeAdminAuthModal();
+            document.getElementById('adminDashboardModal').classList.remove('hidden');
+            fetchApplications();
         }
 
         function closeAdminDashboard() {
-            document.getElementById('adminDashboardModal').classList.hidden = true;
             document.getElementById('adminDashboardModal').classList.add('hidden');
+            applicationsList = [];
+            if (_supabase) _supabase.auth.signOut();
         }
 
         // Fetch Data from Supabase
