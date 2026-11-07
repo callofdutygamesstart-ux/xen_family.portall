@@ -2,8 +2,10 @@
 <html lang="fa" dir="rtl" class="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>XeN TESTING | کلن گیمینگ XeN FAMILY</title>
+    <meta name="description" content="پورتال رسمی ثبت درخواست تست ورودی کلن XeN FAMILY - Call of Duty Mobile">
+    <meta name="theme-color" content="#05070c">
     
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -234,14 +236,14 @@
                     </label>
                     <div class="grid grid-cols-2 gap-3 mb-2">
                         <!-- Telegram Button -->
-                        <button type="button" onclick="selectMessenger('telegram')" id="btn-msg-telegram"
+                        <button type="button" onclick="selectMessenger('telegram', true)" id="btn-msg-telegram"
                             class="messenger-btn active-telegram bg-black/40 border border-white/10 rounded-xl py-3 px-3 text-xs font-bold text-white flex items-center justify-center gap-2">
                             <i class="fab fa-telegram text-xen-telegram text-lg"></i>
                             <span>تلگرام</span>
                         </button>
 
                         <!-- Rubika Button -->
-                        <button type="button" onclick="selectMessenger('rubika')" id="btn-msg-rubika"
+                        <button type="button" onclick="selectMessenger('rubika', true)" id="btn-msg-rubika"
                             class="messenger-btn bg-black/40 border border-white/10 rounded-xl py-3 px-3 text-xs font-bold text-gray-300 flex items-center justify-center gap-2">
                             <svg class="rubika-icon text-xen-rubika" viewBox="0 0 24 24">
                                 <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 14.5h-2v-2h2v2zm0-4h-2V7h2v5.5z" fill="currentColor"/>
@@ -313,7 +315,7 @@
     </footer>
 
     <!-- Toast Modal -->
-    <div id="toastModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md hidden px-4 transition-all">
+    <div id="toastModal" class="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-md hidden px-4 transition-all">
         <div class="glass-panel p-6 rounded-2xl max-w-sm w-full text-center space-y-4 border-xen-cyan/40 animate-card-appear">
             <div id="toastIcon" class="text-4xl text-xen-cyan mb-2"></div>
             <h3 id="toastTitle" class="text-lg font-bold text-white"></h3>
@@ -399,60 +401,158 @@
         let activeAdminTab = 'new';
 
 
-        // ===== Profanity filter (Persian + obfuscation-proof) =====
-        const BANNED_FA = ['کص', 'کلن', 'کلنتون', 'مادرتون', 'ننتون', 'ننت', 'مادر', 'ننه', 'کیر'];
-        const BANNED_EN = ['kir', 'kos', 'kose', 'madar', 'nane', 'nanat', 'klan'];
+        // ===== XeN strict application-input filter =====
+        // The form only accepts a name, messenger ID and device/model details.
+        // Normalize punctuation, spacing, repeated letters and common leetspeak before checking.
+        const BANNED_FA_ROOTS = [
+            'کص','کصکش','کوسکش','کسکش','کیر','کیرم','کیرت','کیرش','کیرکش','کون','کونی','کونده',
+            'کسخل','کسشعر','کسننه','کصم','کصت','کصش','کصلیس','کوص','کوس',
+            'جق','جقی','جقیی','جقزدن','جق زدن','جنده','جندگی','جاکش','جاکشی','لاشی',
+            'گایید','گاییدن','گاییده','گاییدم','گاییدت','گاییدش','گای','گایی','بگام','بگا','بگایی',
+            'مادرجنده','مادرکصده','مادرکونی','ننه','ننت','ننهات','ننتم','حرومزاده','حرامزاده',
+            'پدرسگ','پدرسوخته','تخمحرام','ریدی','ریدن','ریدم','گوه','گوهی','شاش','شاشید',
+            'سکس','سکسی','ساک','ساکزدن','آلتت','کونده','قحبه','قرمساق','بی ناموس','بیناموس',
+            'بی شرف','بیشرف','کس نگو','کثافت','عوضی','خفه شو'
+        ];
+        const BANNED_EN_ROOTS = [
+            'kos','koss','koskesh','koskash','koskes','koskeshi','koskeshha','koskesh',
+            'kir','kiram','kiret','kiresh','kiri','koon','koni','kooni','kon','konde',
+            'jende','jendeh','jakesh','jackesh','lashi','gayid','gaid','gai','gayi','gaiid',
+            'begam','begaa','bega','nane','naneh','nanat','madarjende','madarkosde',
+            'haroomzade','haramzade','pedarsag','pedarsookhte','sex','seks','jagh','jaq',
+            'jogh','joghi','jaghii','jaghzadan','shash','gooh','goh','koskhol','koskhol2'
+        ];
 
-        // Allows any letter to be repeated, but keeps real double letters (e.g. "ننه" needs 2+ ن)
-        function buildPattern(word) {
-            const ch = [...word];
-            let out = '', i = 0;
-            while (i < ch.length) {
-                let j = i;
-                while (j < ch.length && ch[j] === ch[i]) j++;
-                const c = j - i;
-                out += c > 1 ? `${ch[i]}{${c},}` : `${ch[i]}+`;
-                i = j;
-            }
-            return new RegExp(out);
-        }
-        const FA_PATTERNS = BANNED_FA.map(buildPattern);
-        const EN_PATTERNS = BANNED_EN.map(buildPattern);
-
-        // Unify Arabic/Persian letter forms, then drop EVERYTHING except Persian letters
-        // (dots, spaces, ZWNJ, tatweel, digits, symbols, emoji, diacritics...)
-        function normalizeFa(str) {
-            return String(str).normalize('NFKC')
+        function normalizePersianInput(value) {
+            return String(value ?? '').normalize('NFKC').toLowerCase()
                 .replace(/[يى]/g, 'ی').replace(/ك/g, 'ک')
-                .replace(/[ۀةە]/g, 'ه').replace(/[أإآٱ]/g, 'ا')
-                .replace(/[^\u0621-\u063A\u0641-\u064A\u067E\u0686\u0698\u06A9\u06AF\u06CC]/g, '');
+                .replace(/[ۀةە]/g, 'ه').replace(/[أإآٱ]/g, 'ا').replace(/[ؤ]/g, 'و').replace(/[ئ]/g, 'ی')
+                .replace(/[\u064B-\u065F\u0670\u0640]/g, '')
+                .replace(/[^\u0621-\u063A\u0641-\u064A\u067E\u0686\u0698\u06A9\u06AF\u06CC]/g, '')
+                .replace(/(.)\1{1,}/g, '$1');
         }
 
-        // Finglish / leetspeak: k.i.r  k1r  m@dar ...
-        function normalizeEn(str) {
-            return String(str).normalize('NFKC').toLowerCase()
-                .replace(/[1!|]/g, 'i').replace(/0/g, 'o').replace(/3/g, 'e')
-                .replace(/[4@]/g, 'a').replace(/[5$]/g, 's')
-                .replace(/[^a-z]/g, '');
+        function normalizeFinglishInput(value) {
+            return String(value ?? '').normalize('NFKC').toLowerCase()
+                .replace(/[0]/g, 'o').replace(/[1!|]/g, 'i').replace(/[3]/g, 'e')
+                .replace(/[4@]/g, 'a').replace(/[5$]/g, 's').replace(/[7]/g, 't')
+                .replace(/[^a-z]/g, '').replace(/(.)\1{1,}/g, '$1');
         }
 
-        function containsBanned(text, checkLatin) {
+        // Convert Persian-script profanity to a rough Latin skeleton too, so mixed-script tricks are caught.
+        function persianToLatinSkeleton(value) {
+            const map = { 'ا':'a','آ':'a','ب':'b','پ':'p','ت':'t','ث':'s','ج':'j','چ':'ch','ح':'h','خ':'kh',
+                'د':'d','ذ':'z','ر':'r','ز':'z','ژ':'zh','س':'s','ش':'sh','ص':'s','ض':'z','ط':'t','ظ':'z',
+                'ع':'a','غ':'gh','ف':'f','ق':'gh','ک':'k','گ':'g','ل':'l','م':'m','ن':'n','و':'o',
+                'ه':'h','ی':'i','ء':'','ئ':'i' };
+            const normalized = String(value ?? '').normalize('NFKC').toLowerCase()
+                .replace(/[يى]/g, 'ی').replace(/ك/g, 'ک').replace(/[ۀةە]/g, 'ه')
+                .replace(/[أإآٱ]/g, 'ا').replace(/[ؤ]/g, 'و').replace(/[ئ]/g, 'ی')
+                .replace(/[\u064B-\u065F\u0670\u0640]/g, '');
+            return normalized.split('').map(ch => map[ch] ?? (/[a-z]/.test(ch) ? ch : '')).join('')
+                .replace(/(.)\1{1,}/g, '$1');
+        }
+
+        const FA_ALL = [...new Set(BANNED_FA_ROOTS.map(normalizePersianInput).filter(Boolean))];
+        const EN_ALL = [...new Set(BANNED_EN_ROOTS.map(normalizeFinglishInput).filter(Boolean))];
+        // Short roots only match a whole word (avoids false positives like "کوشا", "گوهر", "Akira").
+        // Long roots (5+ chars) match as substrings to catch obfuscation.
+        const SHORT_MAX = 4;
+        const FA_SHORT = new Set(FA_ALL.filter(r => r.length <= SHORT_MAX).concat(['کس','کوس']));
+        const FA_LONG = FA_ALL.filter(r => r.length > SHORT_MAX);
+        const EN_SHORT = new Set(EN_ALL.filter(r => r.length <= SHORT_MAX).concat(['kos']));
+        const EN_LONG = EN_ALL.filter(r => r.length > SHORT_MAX);
+
+        function containsBanned(text) {
             if (!text) return false;
-            const fa = normalizeFa(text);
-            if (FA_PATTERNS.some(r => r.test(fa))) return true;
-            if (checkLatin) {
-                const en = normalizeEn(text);
-                if (EN_PATTERNS.some(r => r.test(en))) return true;
+            const raw = String(text);
+            const faFull = normalizePersianInput(raw);
+            const enFull = normalizeFinglishInput(raw);
+            const mixFull = persianToLatinSkeleton(raw);
+            if (FA_LONG.some(r => faFull.includes(r))) return true;
+            if (EN_LONG.some(r => enFull.includes(r) || mixFull.includes(r))) return true;
+            const tokens = [raw, ...raw.split(/[\s\u200c]+/).filter(Boolean)];
+            return tokens.some(t => FA_SHORT.has(normalizePersianInput(t)) ||
+                EN_SHORT.has(normalizeFinglishInput(t)) || EN_SHORT.has(persianToLatinSkeleton(t)));
+        }
+
+        // Strict allow-lists: only the information this application form actually needs.
+        function isAllowedName(value) {
+            return /^[\p{Script=Arabic}a-zA-Z][\p{Script=Arabic}a-zA-Z '\u2019\u200c-]{0,29}$/u.test(String(value || '').trim());
+        }
+        function isAllowedMessengerId(value) {
+            return /^@?[a-zA-Z0-9_.]{2,39}$/.test(String(value || '').trim());
+        }
+        function isAllowedPhoneModel(value) {
+            return /^[\p{Script=Arabic}a-zA-Z0-9 .+()\/_-]{1,30}$/u.test(String(value || '').trim());
+        }
+
+        // A profanity attempt locks this browser for one hour.
+        // Note: localStorage is a client-side deterrent, not an unbypassable server ban.
+        const PROFANITY_BAN_KEY = 'xen_profanity_ban_until';
+        const PROFANITY_BAN_MS = 60 * 60 * 1000;
+
+        function safeGet(k) { try { return localStorage.getItem(k); } catch (_) { return null; } }
+        function safeSet(k, v) { try { localStorage.setItem(k, v); } catch (_) {} }
+        let isSubmitting = false;
+
+        function getProfanityBanUntil() {
+            try { return Number(safeGet(PROFANITY_BAN_KEY) || 0); }
+            catch (_) { return 0; }
+        }
+
+        function getProfanityBanRemaining() {
+            return Math.max(0, getProfanityBanUntil() - Date.now());
+        }
+
+        function formatBanRemaining(ms) {
+            const totalSeconds = Math.ceil(ms / 1000);
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            return `${minutes} دقیقه و ${seconds} ثانیه`;
+        }
+
+        function refreshProfanityBanUI() {
+            if (isSubmitting) return;
+            const button = document.getElementById('submitBtn');
+            if (!button) return;
+            const remaining = getProfanityBanRemaining();
+            if (remaining > 0) {
+                button.disabled = true;
+                button.innerHTML = `<i class="fas fa-lock"></i> <span>محدودیت ارسال: ${formatBanRemaining(remaining)}</span>`;
+                button.classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+                button.disabled = false;
+                button.innerHTML = '<span>ارسال اطلاعات درخواست</span> <i class="fas fa-paper-plane text-xen-cyan"></i>';
+                button.classList.remove('opacity-50', 'cursor-not-allowed');
             }
-            return false;
+        }
+
+        function showProfanityBanMessage() {
+            const remaining = getProfanityBanRemaining();
+            showToast('ارسال درخواست مسدود شد 🚫', `به دلیل استفاده از کلمه نامناسب، امکان ارسال درخواست تا ${formatBanRemaining(remaining)} دیگر وجود ندارد.`, 'fa-lock text-red-500');
+        }
+
+        function applyProfanityBan() {
+            try { localStorage.setItem(PROFANITY_BAN_KEY, String(Date.now() + PROFANITY_BAN_MS)); }
+            catch (_) { /* The server must enforce bans for stronger protection. */ }
+            refreshProfanityBanUI();
+            showProfanityBanMessage();
         }
 
         function showProfanityError() {
-            showToast('ورودی غیرمجاز 🚫', 'خودتی! 😎 لطفاً محترمانه بنویس.', 'fa-ban text-red-500');
+            // First offense = warning, second within one hour = lock.
+            const now = Date.now();
+            const last = Number(safeGet('xen_strike_at') || 0);
+            const n = (now - last < PROFANITY_BAN_MS ? Number(safeGet('xen_strikes') || 0) : 0) + 1;
+            safeSet('xen_strikes', String(n));
+            safeSet('xen_strike_at', String(now));
+            if (n >= 2) { applyProfanityBan(); return; }
+            showToast('کلمه نامناسب ⚠️', 'لطفاً فقط اسم، آیدی و مدل دستگاه را بنویس. در صورت تکرار، ارسال به مدت یک ساعت مسدود می‌شود.', 'fa-exclamation-triangle text-yellow-400');
         }
 
         // Select Messenger Platform (Telegram / Rubika)
-        function selectMessenger(platform) {
+        function selectMessenger(platform, focus = false) {
             document.getElementById('applicantMessenger').value = platform;
             
             const btnTelegram = document.getElementById('btn-msg-telegram');
@@ -466,14 +566,14 @@
                 label.innerHTML = '<i class="fab fa-telegram text-xen-telegram ml-1"></i> آیدی تلگرام خود را وارد کنید';
                 label.className = 'block text-xs font-bold text-xen-cyan mb-1.5 pr-1 transition-all';
                 input.placeholder = '@username';
-                input.focus();
+                if (focus) input.focus();
             } else {
                 btnRubika.className = 'messenger-btn active-rubika bg-black/40 border border-white/10 rounded-xl py-3 px-3 text-xs font-bold text-white flex items-center justify-center gap-2';
                 btnTelegram.className = 'messenger-btn bg-black/40 border border-white/10 rounded-xl py-3 px-3 text-xs font-bold text-gray-300 flex items-center justify-center gap-2';
                 label.innerHTML = '<i class="fas fa-at text-xen-rubika ml-1"></i> آیدی روبیکا خود را وارد کنید';
                 label.className = 'block text-xs font-bold text-xen-rubika mb-1.5 pr-1 transition-all';
                 input.placeholder = '@rubika_id';
-                input.focus();
+                if (focus) input.focus();
             }
         }
 
@@ -515,16 +615,32 @@
             const device = document.getElementById('applicantDevice').value;
             const phoneModel = document.getElementById('applicantPhoneModel').value.trim();
 
-            // Bot trap + client cooldown (the real limits live in the database)
+            // Bot trap + client cooldown
             if (document.getElementById('websiteField').value) return;
-            const lastSent = parseInt(localStorage.getItem('xen_last_submit') || '0', 10);
+
+            // Check the one-hour profanity lock before validating or submitting anything.
+            if (getProfanityBanRemaining() > 0) {
+                refreshProfanityBanUI();
+                showProfanityBanMessage();
+                return;
+            }
+
+            const lastSent = parseInt(safeGet('xen_last_submit') || '0', 10);
             if (Date.now() - lastSent < 60000) {
                 showToast('کمی صبر کن', 'هر ۶۰ ثانیه فقط یک درخواست می‌توانی بفرستی.', 'fa-hourglass-half');
                 return;
             }
 
-            if (containsBanned(name, true) || containsBanned(messengerId, false) || containsBanned(phoneModel, false)) {
+            // Profanity in any user-controlled text field triggers the one-hour lock.
+            if ([name, messengerId, phoneModel].some(value => containsBanned(value, true))) {
                 showProfanityError();
+                return;
+            }
+
+            // Reject unrelated text, links, scripts, emojis and malformed identifiers/models.
+            if (!isAllowedName(name) || !isAllowedMessengerId(messengerId) ||
+                ((device === 'Android' || device === 'iOS') && !isAllowedPhoneModel(phoneModel))) {
+                showToast('اطلاعات نامعتبر', 'فقط نام، آیدی معتبر و مدل دستگاه را وارد کنید. لینک، متن اضافی و کاراکترهای نامرتبط پذیرفته نمی‌شود.', 'fa-exclamation-triangle text-yellow-400');
                 return;
             }
 
@@ -533,7 +649,12 @@
                 return;
             }
 
-            if (parseInt(level) > 500) {
+            const ageN = Number(age), levelN = Number(level);
+            if (!Number.isInteger(ageN) || ageN < 10 || ageN > 80) {
+                showToast('خطا در سن', 'سن باید عددی بین ۱۰ تا ۸۰ باشد.', 'fa-exclamation-triangle');
+                return;
+            }
+            if (!Number.isInteger(levelN) || levelN < 1 || levelN > 500) {
                 showToast('خطا در مقدار لول', 'حداکثر لول مجاز ۵۰۰ می‌باشد.', 'fa-exclamation-triangle');
                 return;
             }
@@ -545,6 +666,8 @@
             const formattedTelegramField = messenger === 'rubika' ? `[روبیکا] ${messengerId}` : messengerId;
 
             const submitBtn = document.getElementById('submitBtn');
+            if (isSubmitting) return;
+            isSubmitting = true;
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>در حال ثبت اطلاعات...</span>';
 
@@ -562,7 +685,7 @@
                 if (!_supabase) throw new Error('no-connection');
                 const { error } = await _supabase.from('recruits').insert([payload]);
                 if (error) throw error;
-                localStorage.setItem('xen_last_submit', String(Date.now()));
+                safeSet('xen_last_submit', String(Date.now()));
                 
                 showToast(
                     'درخواست با موفقیت ثبت شد 🎉',
@@ -577,10 +700,11 @@
             } catch (err) {
                 console.error("Submit Error:", err);
                 if (String(err && err.message).includes('inappropriate_content')) { showProfanityError(); return; }
+                if (String(err && err.message).includes('duplicate_recent_request')) { showToast('درخواست تکراری', 'برای این آیدی به‌تازگی درخواست ثبت شده است.', 'fa-info-circle text-xen-cyan'); return; }
                 showToast('خطا در برقراری ارتباط', 'متأسفانه در ثبت اطلاعات خطایی رخ داد. مجدداً تلاش کنید.', 'fa-times-circle text-red-500');
             } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = '<span>ارسال اطلاعات درخواست</span> <i class="fas fa-paper-plane text-xen-cyan"></i>';
+                isSubmitting = false;
+                refreshProfanityBanUI();
             }
         }
 
@@ -591,6 +715,8 @@
             document.getElementById('toastIcon').className = `text-4xl mb-2 fas ${iconClass}`;
             document.getElementById('toastModal').classList.remove('hidden');
         }
+
+        function notify(msg) { showToast('اطلاع', msg, 'fa-info-circle text-xen-cyan'); }
 
         function closeToast() {
             document.getElementById('toastModal').classList.add('hidden');
@@ -612,15 +738,16 @@
         async function verifyAdminPassword() {
             const email = document.getElementById('adminEmailInput').value.trim();
             const password = document.getElementById('adminPasswordInput').value;
-            if (!email || !password || !_supabase) return;
-
-            // Real server-side login via Supabase Auth (no password stored in the page)
-            const { error } = await _supabase.auth.signInWithPassword({ email, password });
-            if (error) {
-                document.getElementById('adminPasswordInput').value = '';
-                alert('ایمیل یا رمز عبور اشتباه است!');
-                return;
-            }
+            if (!email || !password) { notify('ایمیل و رمز عبور را وارد کنید.'); return; }
+            if (!_supabase) { notify('اتصال به دیتابیس برقرار نیست.'); return; }
+            try {
+                const { error } = await _supabase.auth.signInWithPassword({ email, password });
+                if (error) {
+                    document.getElementById('adminPasswordInput').value = '';
+                    notify('ایمیل یا رمز عبور اشتباه است!');
+                    return;
+                }
+            } catch (_) { notify('خطا در ارتباط با سرور.'); return; }
             closeAdminAuthModal();
             document.getElementById('adminDashboardModal').classList.remove('hidden');
             fetchApplications();
@@ -727,22 +854,22 @@
 
                         <div class="flex items-center gap-2 pt-1">
                             <!-- Copy Formatted Text Button -->
-                            <button onclick="copyFormattedApplicantInfo('${item.id}')" class="flex-1 bg-xen-cyan/15 hover:bg-xen-cyan/25 border border-xen-cyan/40 text-xen-cyan rounded-xl py-2 text-xs font-bold flex items-center justify-center gap-1.5 transition-all active:scale-95">
+                            <button data-act="copy" data-id="${escapeHtml(item.id)}" class="flex-1 bg-xen-cyan/15 hover:bg-xen-cyan/25 border border-xen-cyan/40 text-xen-cyan rounded-xl py-2 text-xs font-bold flex items-center justify-center gap-1.5 transition-all active:scale-95">
                                 <i class="fas fa-copy"></i>
                                 <span>کپی اطلاعات کاربر 📋</span>
                             </button>
 
                             ${activeAdminTab === 'new' ? `
-                                <button onclick="toggleStatus('${item.id}', 'reviewed')" class="bg-green-500/20 hover:bg-green-500/30 border border-green-500/40 text-green-400 rounded-xl px-3 py-2 text-xs font-bold transition-all" title="تایید و انتقال به بررسی‌شده">
+                                <button data-act="status" data-status="reviewed" data-id="${escapeHtml(item.id)}" class="bg-green-500/20 hover:bg-green-500/30 border border-green-500/40 text-green-400 rounded-xl px-3 py-2 text-xs font-bold transition-all" title="تایید و انتقال به بررسی‌شده">
                                     <i class="fas fa-check"></i>
                                 </button>
                             ` : `
-                                <button onclick="toggleStatus('${item.id}', 'new')" class="bg-yellow-500/20 hover:bg-yellow-500/30 border border-yellow-500/40 text-yellow-400 rounded-xl px-3 py-2 text-xs font-bold transition-all" title="بازگردانی به جدیدها">
+                                <button data-act="status" data-status="new" data-id="${escapeHtml(item.id)}" class="bg-yellow-500/20 hover:bg-yellow-500/30 border border-yellow-500/40 text-yellow-400 rounded-xl px-3 py-2 text-xs font-bold transition-all" title="بازگردانی به جدیدها">
                                     <i class="fas fa-undo"></i>
                                 </button>
                             `}
 
-                            <button onclick="deleteApplicant('${item.id}')" class="bg-red-500/20 hover:bg-red-500/30 border border-red-500/40 text-red-400 rounded-xl px-3 py-2 text-xs font-bold transition-all" title="حذف درخواست">
+                            <button data-act="delete" data-id="${escapeHtml(item.id)}" class="bg-red-500/20 hover:bg-red-500/30 border border-red-500/40 text-red-400 rounded-xl px-3 py-2 text-xs font-bold transition-all" title="حذف درخواست">
                                 <i class="fas fa-trash-alt"></i>
                             </button>
                         </div>
@@ -779,7 +906,7 @@
             // Compatibility copy function for clipboard
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(formattedText).then(() => {
-                    alert('اطلاعات کامل کاربر با فرمت خفن و ایموجی در حافظه کپی شد! 📋🔥');
+                    notify('اطلاعات کامل کاربر با فرمت خفن و ایموجی در حافظه کپی شد! 📋🔥');
                 }).catch(err => {
                     fallbackCopy(formattedText);
                 });
@@ -795,9 +922,9 @@
             textArea.select();
             try {
                 document.execCommand('copy');
-                alert('اطلاعات کاربر با موفقیت کپی شد! 📋🔥');
+                notify('اطلاعات کاربر با موفقیت کپی شد! 📋🔥');
             } catch (err) {
-                alert('خطا در کپی اطلاعات!');
+                notify('خطا در کپی اطلاعات!');
             }
             document.body.removeChild(textArea);
         }
@@ -820,7 +947,7 @@
 
             } catch (err) {
                 console.error("Error Updating Status:", err);
-                alert("خطا در بروزرسانی وضعیت!");
+                notify("خطا در بروزرسانی وضعیت!");
             }
         }
 
@@ -843,7 +970,7 @@
 
             } catch (err) {
                 console.error("Error Deleting:", err);
-                alert("خطا در حذف درخواست!");
+                notify("خطا در حذف درخواست!");
             }
         }
 
@@ -870,6 +997,20 @@
         // Initialize Form State
         selectMessenger('telegram');
         selectDevice('PC');
+        refreshProfanityBanUI();
+        setInterval(() => {
+            const b = document.getElementById('submitBtn');
+            if (b && (b.disabled || getProfanityBanRemaining() > 0)) refreshProfanityBanUI();
+        }, 1000);
+        document.getElementById('adminRequestsList').addEventListener('click', e => {
+            const b = e.target.closest('[data-act]');
+            if (!b) return;
+            const id = b.dataset.id;
+            if (b.dataset.act === 'copy') copyFormattedApplicantInfo(id);
+            else if (b.dataset.act === 'status') toggleStatus(id, b.dataset.status);
+            else if (b.dataset.act === 'delete') deleteApplicant(id);
+        });
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeToast(); });
     </script>
 </body>
 </html>
